@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "Tự nhiên & Khỏe mạnh",
+    "subtitle": "Thực phẩm thuần chay",
+    "image": "https://images.pexels.com/photos/1458694/pexels-photo-1458694.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    "url": "/shop-grid-standard"
+  },
+  {
+    "id": 2,
+    "title": "An toàn & Chất lượng",
+    "subtitle": "100% Thành phần được làm bằng tinh bột",
+    "image": "https://images.pexels.com/photos/5677794/pexels-photo-5677794.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    "url": "/shop-grid-standard"
+  }
+]

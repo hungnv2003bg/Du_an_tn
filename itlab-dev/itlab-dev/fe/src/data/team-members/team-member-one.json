@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "image": "/assets/img/team/lead.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Lê Văn Thuận"
+  },
+  {
+    "id": "2",
+    "image": "/assets/img/team/member.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Trần Văn Giang"
+  },
+  {
+    "id": "3",
+    "image": "/assets/img/team/member.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Đồng Công Định"
+  },
+  {
+    "id": "4",
+    "image": "/assets/img/team/member.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Nguyễn Đăng Huy"
+  },
+  {
+    "id": "5",
+    "image": "/assets/img/team/member.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Nguyễn Đức Duy"
+  },
+  {
+    "id": "6",
+    "image": "/assets/img/team/member.jpg",
+    "fbLink": "//www.facebook.com",
+    "twitterLink": "//www.twitter.com",
+    "instagramLink": "//www.instagram.com",
+    "name": "Đinh Đức Hải"
+  }
+]

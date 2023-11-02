@@ -1,8 +1,8 @@
 import axios from './axios';
 
 
-const getAllMauSac = () => {
-    return axios.get('http://localhost:8088/api/mau-sac/get-all');   
+const getAllMauSac = (page) => {
+    return axios.get(`http://localhost:8088/api/mau-sac/get-page/${page}`);   
 }
 
 const postCreateMS = (maMau, tenMau,ngayTao,ngayCapNhat) =>{

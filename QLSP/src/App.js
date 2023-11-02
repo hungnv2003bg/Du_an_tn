@@ -25,10 +25,10 @@ function App() {
         <Container>
           <div className='my-3 add-new'>
             <span><b>Danh sách thông tin</b></span>
-            <button className='btn btn-success' onClick={() => setIsShowMoDalAddNewChatLieu(true) }>Thêm mới</button>
+            <button className='btn btn-success' onClick={() => setIsShowMoDalAddNewMauSac(true) }>Thêm mới</button>
           </div>
-          {/* <TableMauSac /> */}
-          <TableChatLieu />
+          {/* <TableChatLieu /> */}
+          <TableMauSac />
         </Container>
 
         <ModalAddNewMauSac

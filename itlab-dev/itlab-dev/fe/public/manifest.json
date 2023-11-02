@@ -1,0 +1,8 @@
+{
+  "short_name": "Poly food",
+  "name": "Thực phẩm thuần chay Poly food",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

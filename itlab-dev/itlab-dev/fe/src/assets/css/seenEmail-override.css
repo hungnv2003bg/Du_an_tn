@@ -1,0 +1,10 @@
+.ovr-pickdate .ant-picker-input > input{
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-width: 140px;
+}
+.my-0 .ant-form-item-required,
+.optionSelect .ant-form-item-required{
+    min-width: 87px;
+}

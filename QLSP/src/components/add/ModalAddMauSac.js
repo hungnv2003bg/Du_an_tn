@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import {Modal, Button} from 'react-bootstrap';
-import { postCreateMS } from '../../service/MauSacService';
+import { getAllMauSac, postCreateMS } from '../../service/MauSacService';
 import {  toast } from 'react-toastify';
+import TableMauSac from '../view/TableMauSac';
 
 
 const ModalAddNewMauSac = (props) =>{
@@ -22,7 +23,7 @@ const ModalAddNewMauSac = (props) =>{
             setNgayTao('');
             setNgayCapNhat('');
             toast.success("Succes!")
-            window.location.reload();
+            window.location.reload(); 
             //success
         }
     }
