@@ -1,0 +1,19 @@
+.content-profile {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    width: 800px;
+    margin-left: 8px;
+    padding: 12px 24px;
+}
+
+.menu-profile {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    width: 220px;
+}
+
+.content-profile .input-profile {
+    height: 40px;
+    background-color: #f4f4f4;
+    border: 1px solid;
+    padding: 8px;
+    width: 100%;
+}

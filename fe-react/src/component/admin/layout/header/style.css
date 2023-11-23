@@ -1,0 +1,77 @@
+.header-admin-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    height: 80px;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+.header-admin-container .shop-logo {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    max-width: 18rem;
+    align-items: center;
+    height: 80px;
+}
+
+.header-admin-container .shop-logo img {
+    height: 44px;
+    width: auto;
+}
+
+.header-admin-container .user {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 80px;
+    width: 80%;
+    margin-right: 20px;
+}
+
+.header-admin-container .user .user-detail {
+    height: 80px;
+    display: flex;
+    align-items: center;
+
+}
+
+.header-admin-container .user .user-detail img {
+    height: 40px;
+    width: auto;
+    border-radius: 50%;
+}
+
+.header-admin-container .user .user-detail .detail {
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 12px;
+    margin-right: 40px;
+}
+
+.header-admin-container .user .user-detail .detail .name {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.header-admin-container .user .user-detail .detail .role {
+    font-size: 14px;
+    font-weight: 400;
+    color: #A8A8A8;
+}
+
+.header-admin-container .user .header-menu {
+    font-size: 28px;
+}
+
+.header-admin-container .user .header-menu:hover {
+    cursor: pointer;
+}

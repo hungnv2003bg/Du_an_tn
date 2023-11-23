@@ -1,0 +1,17 @@
+.body-container {
+    display: inline-block;
+    min-height: 100vh;
+    margin-top: 80px;
+    padding-left: 18rem;
+    width: 100%;
+    background-color: #F3F5F9;
+    position: relative;
+    z-index: 1;
+}
+
+.body-container .content {
+    width: 96%;
+    z-index: 1;
+    margin-top: 20px;
+    margin-left: 2%;
+}
