@@ -14,6 +14,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNhomSanPhamStore } from "./useNhomSanPhamStore";
 import { useSelector } from "react-redux";
 import { IoEyeSharp } from "react-icons/io5";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
 function ModalView({ id }) {
   const language = useSelector(selectLanguage);
   const [chatLieu, setChatLieu] = useState({
@@ -70,7 +71,16 @@ function ModalView({ id }) {
           style={{
             maxWidth: 600,
           }}
+        >  <Form.Item
+          label="Mã SP"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         >
+            <Input disabled value={chatLieu.maSanPham} />
+          </Form.Item>
           <Form.Item
             label="Màu sắc"
             rules={[
@@ -129,10 +139,10 @@ function ModalView({ id }) {
               },
             ]}
           >
-            <Input disabled value={chatLieu.ngayTao} />
+            <Input disabled value={fixNgayThang(chatLieu.ngayTao)} />
           </Form.Item>
           <Form.Item label="Ngày cập nhật">
-            <Input disabled value={chatLieu.ngayCapNhat ? chatLieu.ngayCapNhat : "Mới"} />
+            <Input disabled value={chatLieu.ngayCapNhat ? fixNgayThang(chatLieu.ngayCapNhat) : "Mới"} />
           </Form.Item>
         </Form>
       </Modal>

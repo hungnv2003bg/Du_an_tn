@@ -1,0 +1,20 @@
+.choxacnhan {
+    min-height: 100vh;
+    padding: 12px 24px;
+    background-color: #ffffff;
+}
+
+.btn-hoadonchitiet:hover {
+    cursor: pointer;
+    color: rgb(151, 151, 237);
+    background-color: #a8a8a8;
+}
+
+.btn-hoadonchitiet {
+    height: 28px;
+    width: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}

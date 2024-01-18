@@ -14,6 +14,7 @@ import java.util.Optional;
 public class NhanVienController {
     @Autowired
     private ISanPhamService _sanPhamService;
+
     @RequestMapping(value = "/phantrangsanpham", method = RequestMethod.GET)
     public ResponseEntity<?> layDuLieuSanPhamYeuThich(
             Integer page,
@@ -32,7 +33,8 @@ public class NhanVienController {
                 thuongHieuId.orElse(null),
                 mauSacId.orElse(null),
                 loaiSanPhamId.orElse(null),
-                kichThuocId.orElse(null))
+                kichThuocId.orElse(null),
+                null)
         );
     }
 }

@@ -1,6 +1,6 @@
 package it.lab.enums;
 
 public enum LoaiGiam {
-    GIAMTHANG,
+    GIAMTHANG,// bỏ tất cả đều là %
     PHANTRAM
 }

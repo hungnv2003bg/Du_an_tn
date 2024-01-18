@@ -75,3 +75,7 @@
 .header-admin-container .user .header-menu:hover {
     cursor: pointer;
 }
+
+.shop-logo:hover {
+    cursor: pointer;
+}

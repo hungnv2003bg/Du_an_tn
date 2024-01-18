@@ -1,27 +1,24 @@
 package it.lab.service;
 
+import it.lab.common.Email;
+import it.lab.common.EmailHoaDon;
 import it.lab.common.Page;
 import it.lab.common.ResponObject;
+import it.lab.dto.DiaChiDTO;
 import it.lab.dto.HoaDonDTO;
 import it.lab.dto.SanPhamChiTietDTO;
 import it.lab.dto.SanPhamDTO;
-import it.lab.entity.HoaDon;
-import it.lab.entity.HoaDonChiTiet;
-import it.lab.entity.SanPham;
+import it.lab.entity.*;
 import it.lab.entity.SanPhamChiTiet;
-import it.lab.enums.APIStatus;
-import it.lab.enums.TrangThaiHoaDon;
-import it.lab.enums.XacNhanHoaDonEnum;
+import it.lab.enums.*;
 import it.lab.iservice.IHoaDonService;
 import it.lab.modelcustom.respon.*;
-import it.lab.repository.HoaDonChiTietRepo;
-import it.lab.repository.HoaDonRepo;
-import it.lab.repository.SanPhamChiTietRepo;
-import it.lab.repository.SanPhamRepo;
+import it.lab.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +28,18 @@ public class HoaDonService implements IHoaDonService {
     @Autowired
     private HoaDonRepo _hoaDonRepo;
     @Autowired
+    private NguoiDungVoucherRepo _nguoiDungVoucherRepo;
+    @Autowired
     private HoaDonChiTietRepo _hoaDonChiTietRepo;
     @Autowired
     private SanPhamChiTietRepo _sanPhamChiTietRepo;
+    @Autowired
+    private DiaChiRepo _diaChiRepo;
+    @Autowired
+    private SanPhamRepo _sanPhamRepo;
+    @Autowired
+    private NguoiDungRepo _nguoiDungRepo;
+    private Email e = new Email();
 
     @Override
     public Page<HoaDonCho> layHetHoaDonCho() {
@@ -61,6 +67,18 @@ public class HoaDonService implements IHoaDonService {
     }
 
     @Override
+    public Page<HoaDonDoiTra> layHetHoaDonDoiTra() {
+        return new Page<HoaDonDoiTra>(HoaDonDoiTra.fromCollection(_hoaDonRepo.findAll()), 0, 100000);
+
+    }
+
+    @Override
+    public Page<HoaDonTuChoiDoi> layHetHoaDonTuChoiHuy() {
+        return new Page<HoaDonTuChoiDoi>(HoaDonTuChoiDoi.fromCollection(_hoaDonRepo.findAll()), 0, 100000);
+
+    }
+
+    @Override
     public ResponObject<List<String>, XacNhanHoaDonEnum> xacNhanHoaDon(Long[] hoaDonId) {
         List<String> hoaDonMaSanPhamDaHet = new ArrayList<>();
         boolean check = true;
@@ -78,11 +96,17 @@ public class HoaDonService implements IHoaDonService {
                     hoaDonMaSanPhamDaHet.add(" " + hd.get().getMaHoaDon() + " của khách hàng " + hd.get().getNguoiMua().getHo() + " " + hd.get().getNguoiMua().getTen() + " ");
                     break;
                 }
-                sp.get().setSoLuongTon(sp.get().getSoLuongTon() - hdChiTiet.getSoLuong());
+//                sp.get().setSoLuongTon(sp.get().getSoLuongTon() - hdChiTiet.getSoLuong());
+//                sp.get().setSoLuongDaBan(sp.get().getSoLuongDaBan()+ hdChiTiet.getSoLuong());
+//                SanPham sanPham = sp.get().getSanPham();
+//                sanPham.setSoLuongTon(sanPham.getSoLuongTon()- hdChiTiet.getSoLuong());
+//                sanPham.setSoLuongDaBan(sanPham.getSoLuongDaBan()+ hdChiTiet.getSoLuong());
+               // _sanPhamRepo.save(sanPham);
                 _sanPhamChiTietRepo.save(sp.get());
             }
             if (check) {
                 hd.get().setTrangThai(TrangThaiHoaDon.CHOGIAOHANG);
+                e.sendContentHTML(hd.get().getNguoiMua().getEmail(),"Xác nhận hóa đơn thành công", EmailHoaDon.guiEmailKhiXacNhanTemplate(hd.get()));
                 _hoaDonRepo.save(hd.get());
             }
         }
@@ -112,6 +136,7 @@ public class HoaDonService implements IHoaDonService {
 //            }
 //            if (check) {
             hd.get().setTrangThai(TrangThaiHoaDon.DANGGIAO);
+            e.sendContentHTML(hd.get().getNguoiMua().getEmail(),"Đơn hàng của quý khách đang được giao", EmailHoaDon.guiEmailKhiXacNhanTemplate(hd.get()));
             _hoaDonRepo.save(hd.get());
             //   }
         }
@@ -140,7 +165,10 @@ public class HoaDonService implements IHoaDonService {
 //                _sanPhamChiTietRepo.save(sp.get());
 //            }
 //            if (check) {
+            hd.get().setNgayThanhToan(LocalDateTime.now());
+            hd.get().setNgayGiao(LocalDateTime.now());
             hd.get().setTrangThai(TrangThaiHoaDon.DAGIAO);
+            e.sendContentHTML(hd.get().getNguoiMua().getEmail(),"Đơn hàng của quý khách đã được giao thành công", EmailHoaDon.guiEmailKhiXacNhanTemplate(hd.get()));
             _hoaDonRepo.save(hd.get());
             //   }
         }
@@ -155,7 +183,21 @@ public class HoaDonService implements IHoaDonService {
             if (hd.isEmpty()) {
                 continue;
             }
+            if (hd.get().getVoucherGiam() != null) {
+                hd.get().getVoucherGiam().setTrangThai(TrangThaiNguoiDungVoucher.SUDUNG);
+                _nguoiDungVoucherRepo.save(hd.get().getVoucherGiam());
+            }
+            for (var item: hd.get().getHoaDonChiTietList()) {
+                SanPhamChiTiet spct = item.getSanPhamChiTiet();
+                spct.setSoLuongTon(spct.getSoLuongTon()+item.getSoLuong());
+                SanPham sp = spct.getSanPham();
+                sp.setSoLuongTon(sp.getSoLuongTon()+item.getSoLuong());
+                _sanPhamChiTietRepo.save(spct);
+                _sanPhamRepo.save(sp);
+//                spct.setSoLuongDaBan(spct.get);
+            }
             hd.get().setTrangThai(TrangThaiHoaDon.CUAHANGHUY);
+            e.sendContentHTML(hd.get().getNguoiMua().getEmail(),"Đơn hàng của quý khách đã bị hủy", EmailHoaDon.guiEmailKhiXacNhanTemplate(hd.get()));
             _hoaDonRepo.save(hd.get());
         }
         return new ResponObject<List<String>, XacNhanHoaDonEnum>(null, XacNhanHoaDonEnum.THANHCONG, "Thành công");
@@ -181,9 +223,17 @@ public class HoaDonService implements IHoaDonService {
             return true;
         }
         Double giaTriCu = hdct.getDonGia() * hdct.getSoLuong();
-        hdct.setSoLuong(soLuongMoi);
+        SanPhamChiTiet spct = hdct.getSanPhamChiTiet();
+        spct.setSoLuongTon(spct.getSoLuongTon()+hdct.getSoLuong()-soLuongMoi);
+        spct.setSoLuongDaBan(spct.getSoLuongDaBan()+hdct.getSoLuong()-soLuongMoi);
+        SanPham sp = spct.getSanPham();
+        sp.setSoLuongTon(sp.getSoLuongTon()+hdct.getSoLuong()-soLuongMoi);
+        sp.setSoLuongDaBan(sp.getSoLuongDaBan()+hdct.getSoLuong()-soLuongMoi);
         Double giaTriMoi = hdct.getDonGia() * hdct.getSoLuong();
         hd.setGiaTriHd(hd.getGiaTriHd() - giaTriCu + giaTriMoi);
+        hdct.setSoLuong(soLuongMoi);
+        _sanPhamRepo.save(sp);
+        _sanPhamChiTietRepo.save(spct);
         _hoaDonChiTietRepo.save(hdct);
         _hoaDonRepo.save(hd);
         return true;
@@ -210,7 +260,7 @@ public class HoaDonService implements IHoaDonService {
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSanPhamChiTiet(spct);
             hoaDonChiTiet.setSoLuong(soLuong);
-            hoaDonChiTiet.setNgayTao(LocalDate.now());
+            hoaDonChiTiet.setNgayTao(LocalDateTime.now());
             Double giaTri = spct.getGiaBan() * soLuong;
             hoaDonChiTiet.setDonGia(spct.getGiaBan());
             hoaDon.setGiaTriHd(hoaDon.getGiaTriHd() + giaTri);
@@ -238,6 +288,23 @@ public class HoaDonService implements IHoaDonService {
         hoaDon.setPhiGiaoHang(phiVanChuyenMoi);
         _hoaDonRepo.save(hoaDon);
         return true;
+    }
+
+    @Override
+    public void doiDiaChiHoaDon(Long hoaDonId, Long diaChiId) {
+        HoaDon hoaDon = _hoaDonRepo.findById(hoaDonId).get();
+        DiaChi diaChi = _diaChiRepo.findById(diaChiId).get();
+        hoaDon.setDiaChiGiao(diaChi);
+        _hoaDonRepo.save(hoaDon);
+    }
+
+    @Override
+    public void taoDiaChi(DiaChiDTO diaChi) {
+        NguoiDung ng = _nguoiDungRepo.findById(diaChi.getNguoiDung().getId()).get();
+        diaChi.setTrangThai(TrangThaiDiaChi.HOATDONG);
+        diaChi.setNgayTao(LocalDateTime.now());
+        diaChi.setNguoiDung(ng);
+        _diaChiRepo.save(diaChi.toEntity());
     }
 
 }

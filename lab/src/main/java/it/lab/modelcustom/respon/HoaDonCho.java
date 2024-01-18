@@ -1,8 +1,10 @@
 package it.lab.modelcustom.respon;
 
 import it.lab.dto.DiaChiDTO;
+import it.lab.dto.HoaDonDTO;
 import it.lab.entity.DiaChi;
 import it.lab.entity.HoaDon;
+import it.lab.entity.HoaDonChiTiet;
 import it.lab.enums.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,9 +24,10 @@ public class HoaDonCho {
     private String maHoaDon;
     private String tenKhachHang;
     private String soDienThoai;
-    private Double giaTriHd;
+    private List<HoaDonChiTiet> hoaDonChiTietList;
     private LocalDateTime ngayTao;
     private String trangThai;
+    private HoaDonDTO hoaDon;
 
     public static HoaDonCho fromEntity(HoaDon entity) {
         return new HoaDonCho(
@@ -32,18 +35,19 @@ public class HoaDonCho {
                 entity.getMaHoaDon(),
                 entity.getNguoiMua().getHo() + entity.getNguoiMua().getTen(),
                 entity.getNguoiMua().getSoDienThoai(),
-                entity.getGiaTriHd(),
+                entity.getHoaDonChiTietList(),
                 entity.getNgayTao(),
-                "Chờ xác nhận"
+                "Chờ xác nhận",
+                HoaDonDTO.fromEntity(entity)
         );
     }
 
     public static List<HoaDonCho> fromCollection(List<HoaDon> collection) {
         List<HoaDonCho> to = new ArrayList<>();
         collection.forEach(x -> {
-           if(x.getTrangThai()== TrangThaiHoaDon.CHOXACNHAN||x.getTrangThai()== TrangThaiHoaDon.CHOTHANHTOANBANKING){
-               to.add(fromEntity(x));
-           }
+            if (x.getTrangThai() == TrangThaiHoaDon.CHOXACNHAN) {
+                to.add(fromEntity(x));
+            }
         });
         return to;
     }

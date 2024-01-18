@@ -13,6 +13,7 @@ import ModalCapNhat from "./ModalCapNhat";
 import ModalXoa from "./ModalXoa";
 import ModalView from "./ModalView";
 import { useForm } from "antd/es/form/Form";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
 function NhomSanPham() {
   const language = useSelector(selectLanguage);
   const dispath = useDispatch();
@@ -158,6 +159,9 @@ function NhomSanPham() {
       dataIndex: "ngayTao",
       key: "ngayTao",
       width: "20%",
+      render: (ngayTao) => (
+        <>{ngayTao ? fixNgayThang(ngayTao) : <Tag color="processing">Mới</Tag>}</>
+      ),
     },
     {
       title: "Ngày cập nhật",
@@ -165,7 +169,7 @@ function NhomSanPham() {
       key: "ngayCapNhat",
       width: "20%",
       render: (ngayCapNhat) => (
-        <>{ngayCapNhat ? ngayCapNhat : <Tag color="processing">Mới</Tag>}</>
+        <>{ngayCapNhat ? fixNgayThang(ngayCapNhat) : <Tag color="processing">Mới</Tag>}</>
       ),
     },
     {
@@ -174,7 +178,7 @@ function NhomSanPham() {
       key: "maChatLieu",
       align: "center",
       width: "15%",
-      render: (id) => (
+      render: (id, record) => (
         <div
           style={{
             display: "flex",
@@ -182,7 +186,7 @@ function NhomSanPham() {
           }}
         >
           <ModalView id={id} />
-          <ModalCapNhat id={id} setData={setData} />
+          <ModalCapNhat data={record} setData={setData} />
           <ModalXoa id={id} setData={setData} />
         </div>
       ),
@@ -230,6 +234,10 @@ function NhomSanPham() {
       return;
     }
     const data = await useNhomSanPhamStore.actions.themChatLieu(chatLieu);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại tên " + chatLieu.tenNhom, "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Thêm thành công", "bottomRight");
     setData(data.data.data);
     setChatLieu({

@@ -44,7 +44,7 @@ public class JwtAuthenFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            log.error("Lỗi filter!");
+            log.warn("Lỗi filter!");
         }
         filterChain.doFilter(request, response);
     }

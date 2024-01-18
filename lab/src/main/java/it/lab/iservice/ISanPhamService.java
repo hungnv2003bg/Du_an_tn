@@ -5,6 +5,7 @@ import it.lab.common.ResponObject;
 import it.lab.dto.*;
 import it.lab.entity.*;
 import it.lab.enums.APIStatus;
+import it.lab.modelcustom.request.FilterSanPham;
 import it.lab.modelcustom.request.SanPhamChiTietRequest;
 import it.lab.modelcustom.request.SanPhamRequest;
 import it.lab.modelcustom.respon.FullThuocTinh;
@@ -17,11 +18,11 @@ import java.util.List;
 public interface ISanPhamService {
     SanPham findById(Long id);
 
-    public Page<SanPhamDTO> phanTrangSanPhamTrangChu(Integer page, Integer pageSize, Long chatLieuId, Long thietKeId, Long thuongHieuId, Long mauSacId, Long loaiSanPhamId, Long kichThuocId);
+    public Page<SanPhamDTO> phanTrangSanPhamTrangChu(Integer page, Integer pageSize, Long chatLieuId, Long thietKeId, Long thuongHieuId, Long mauSacId, Long loaiSanPhamId, Long kichThuocId, String keyWord);
+
+    public Page<SanPhamDTO> phanTrangSanPhamTrangChu(Integer page, Integer pageSize, FilterSanPham filterSanPham);
 
     public SanPhamChiTiet chiTietSanPham(Long sanPhamId);
-
-    SanPham findById(long id);
 
     public Page<ChatLieuDTO> layHetChatLieu();
 
@@ -87,13 +88,15 @@ public interface ISanPhamService {
 
     public SanPhamChiTietDTO laySanPhamChiTietById(Long sanPhamChiTietId);
 
-    public SanPhamDTO laySanPhamById(Long sanPhamId);
+    public SanPhamChiTietDTO laySanPhamChiTietByMaSp(String maSp);
 
     public Page<SanPhamChiTietDTO> laySanPhamChiTietCuaSanPham(Long sanPhamId);
 
     public ResponObject<String, APIStatus> themSanPham(SanPhamRequest sanPham, MultipartFile hinh1, MultipartFile hinh2) throws IOException;
 
-    public Page<SanPhamDTO> suaSanPham(SanPhamRequest sanPham);
+    public SanPhamDTO laySanPhamById(Long sanPhamId);
+
+    public List<NhomSanPham> getAll();
+
+    Page<SanPhamDTO> capNhatSanPham(SanPhamRequest sanPhamRequest, MultipartFile multipartFile, MultipartFile multipartFile1) throws IOException;
 }
-
-

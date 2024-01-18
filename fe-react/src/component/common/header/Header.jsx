@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import "./style.css";
 import { selectLanguage } from "../../../language/selectLanguage";
 import GioHang from "../../home/giohang/GioHang";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuLeft from "../menuleft/MenuLeft";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { FiSearch, FiHeart } from "react-icons/fi";
@@ -10,19 +10,17 @@ import { LuShoppingCart } from "react-icons/lu";
 import { FaRegUser } from "react-icons/fa";
 import Search from "../search/Search";
 import YeuThich from "../../home/yeuthich/YeuThich";
-import { Breadcrumb, notification } from "antd";
+import { Badge, Breadcrumb, Input, notification } from "antd";
 import { Link } from "react-router-dom";
-import { selectUser } from "../../login/selectUser";
+import { SearchOutlined } from '@ant-design/icons';
+import { useGioHang } from "./useGioHang";
 function Header() {
   const language = useSelector(selectLanguage);
-  const user = useSelector(selectUser)
+  const user = JSON.parse(localStorage.getItem("user"))?.data
   const [openGioHang, setOpenGioHang] = useState(false);
   const [openYeuThich, setOpenYeuThich] = useState(false);
   const [openMenuLeft, setOpenMenuLeft] = useState(false);
-  const [openSearch, setOpenSearch] = useState(false);
-
   const [api, contextHolder] = notification.useNotification();
-
   const openNotification = (type, title, des, placement) => {
     if (type === "error") {
       api.error({
@@ -47,19 +45,40 @@ function Header() {
         "bottomRight"
       );
       setTimeout(() => {
-        window.location.href = process.env.REACT_APP_FRONTEND_URL + "login"
-      }, 1000)
-      return
+        window.location.href = process.env.REACT_APP_FRONTEND_URL + "login";
+      }, 1000);
+      return;
     }
-    window.location.href = process.env.REACT_APP_FRONTEND_URL + "profile/" + user.nguoiDung.id
+    window.location.href =
+      process.env.REACT_APP_FRONTEND_URL + "profile/" + user.nguoiDung.id;
+  }
+  const [gioHang, setGioHang] = useState(undefined)
+  const [yeuThich, setYeuThich] = useState(undefined)
+  async function handleLayGioHang() {
+    if (user) {
+      const data = await useGioHang.actions.layGioHang(user.nguoiDung.id)
+      setGioHang(data.data.data)
+    }
+  }
+  async function handleLayYeuThich() {
+    if (user) {
+      const data = await useGioHang.actions.layYeuThich(user.nguoiDung.id)
+      setYeuThich(data.data)
+    }
+  }
+  useEffect(() => {
+    handleLayGioHang()
+    handleLayYeuThich()
+  }, [openGioHang, openYeuThich])
+  function handleSearch() {
+    window.location = 'http://localhost:3000/'
   }
   return (
     <>
       {contextHolder}
-      <GioHang open={openGioHang} setOpen={setOpenGioHang} />
-      <YeuThich open={openYeuThich} setOpen={setOpenYeuThich} />
+      <GioHang handleLayGioHang={handleLayGioHang} gioHang={gioHang} open={openGioHang} setOpen={setOpenGioHang} />
+      <YeuThich handleLayYeuThich={handleLayYeuThich} yeuThich={yeuThich} open={openYeuThich} setOpen={setOpenYeuThich} />
       <MenuLeft open={openMenuLeft} setOpen={setOpenMenuLeft} />
-      <Search open={openSearch} setOpen={setOpenSearch} />
       <div className="header-container">
         <div className="gif-img">
           <img
@@ -78,49 +97,68 @@ function Header() {
             </div>
           </div>
           <div className="mid-menu">
-            <img
-              src="https://routine.vn/media/logo/websites/1/logo-black-2x.png"
-              alt="logo"
-            />
+            <Link to="/">
+              <img
+                src="https://routine.vn/media/logo/websites/1/logo-black-2x.png"
+                alt="logo"
+              />
+            </Link>
             <Breadcrumb
               items={[
                 {
                   title: "Home",
                 },
                 {
-                  title: <a href="">Application Center</a>,
+                  title: <a href="">Trang chủ</a>,
                 },
               ]}
             />
           </div>
           <div className="right-menu">
-            <div
-              className="input-search"
-              onClick={() => {
-                setOpenSearch(true);
-              }}
-            >
-              <FiSearch />
-              <span>{language.header.search.inputHolder}</span>
-            </div>
+            <Input onChange={(e) => {
+              localStorage.setItem("search", e.target.value)
+            }} addonBefore={<SearchOutlined />} blur placeholder="Tìm kiếm" onPressEnter={handleSearch} />
             <div className="icon-right">
-              <div onClick={handleRedirect}>
+              <div
+                style={{
+                  height: "20px"
+                }}
+                onClick={() => {
+                  var nguoiDung = JSON.parse(localStorage.getItem("user"));
+                  if (nguoiDung) {
+                    handleRedirect();
+                    return;
+                  } else {
+                    window.location = "http://localhost:3000/login/page1";
+                  }
+                }}
+              >
                 <FaRegUser />
               </div>
-              <div
-                onClick={() => {
-                  setOpenYeuThich(true);
-                }}
-              >
-                <FiHeart />
-              </div>
-              <div
-                onClick={() => {
-                  setOpenGioHang(true);
-                }}
-              >
-                <LuShoppingCart />
-              </div>
+              <Badge count={yeuThich ? yeuThich.length : 0}>
+                <div
+                  style={{
+                    height: "20px"
+                  }}
+                  onClick={() => {
+                    setOpenYeuThich(true);
+                  }}
+                >
+                  <FiHeart />
+                </div>
+              </Badge>
+              <Badge count={gioHang ? gioHang.length : 0}>
+                <div
+                  style={{
+                    height: "20px"
+                  }}
+                  onClick={() => {
+                    setOpenGioHang(true);
+                  }}
+                >
+                  <LuShoppingCart />
+                </div>
+              </Badge>
             </div>
           </div>
         </div>

@@ -1,19 +1,11 @@
 import { selectLanguage } from "../../../language/selectLanguage";
 import "./style.css";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Table,
-  Tooltip,
-  notification,
-} from "antd";
+import { Button, Form, Input, Modal, Tooltip, notification } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useSanPhamStore } from "./useSanPhamStore";
 import { useSelector } from "react-redux";
 import { IoEyeSharp } from "react-icons/io5";
+import dayjs from "dayjs";
 function ModalView({ id }) {
   const language = useSelector(selectLanguage);
   const [sanPham, setSanPham] = useState({
@@ -47,6 +39,7 @@ function ModalView({ id }) {
         <Button
           style={{
             color: "blue",
+            margin: "0 10px",
           }}
           shape="circle"
           icon={<IoEyeSharp />}
@@ -57,7 +50,13 @@ function ModalView({ id }) {
         title="Sản phẩm"
         open={isModalOpen}
         onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            OK
+          </Button>,
+        ]}
         centered
+        width={768}
       >
         <Form
           name="wrap"
@@ -94,20 +93,23 @@ function ModalView({ id }) {
           >
             <Input disabled value={sanPham.tenSanPham} />
           </Form.Item>
-          <Form.Item label="Hình ảnh 1" >
-            <img
-              alt="Hình ảnh sản phẩm"
-              src={sanPham.hinhAnh1} 
-              style={{ width: '30%', height: '30%' }} 
-            />
-          </Form.Item>
-          <Form.Item label="Hình ảnh 2">
-            <img
-              alt="Hình ảnh sản phẩm"
-              src={sanPham.hinhAnh2} 
-              style={{ width: '30%', height: '30%', floa:"left" }} 
-            />
-          </Form.Item>
+          <div style={{ display: "flex" }}>
+            <Form.Item label="Hình ảnh 1">
+              <img
+                alt="Hình ảnh sản phẩm"
+                src={sanPham.hinhAnh1}
+                style={{ width: "50%", height: "50%" }}
+              />
+            </Form.Item>
+            <Form.Item label="Hình ảnh 2">
+              <img
+                alt="Hình ảnh sản phẩm"
+                src={sanPham.hinhAnh2}
+                style={{ width: "50%", height: "50%" }}
+              />
+            </Form.Item>
+          </div>
+
           <Form.Item
             label="Giá nhập"
             rules={[
@@ -128,25 +130,25 @@ function ModalView({ id }) {
           >
             <Input disabled value={sanPham.giaBan} />
           </Form.Item>
-          <Form.Item
-            label="Ngày tạo"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled value={sanPham.ngayTao} />
+          <Form.Item label="Ngày tạo">
+            <Input
+              disabled
+              value={
+                sanPham.ngayTao
+                  ? dayjs(sanPham.ngayTao).format("DD/MM/YYYY")
+                  : "Mới"
+              }
+            />
           </Form.Item>
-          <Form.Item
-            label="Ngày cập nhật"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled value={sanPham.ngayCapNhat} />
+          <Form.Item label="Ngày cập nhật">
+            <Input
+              disabled
+              value={
+                sanPham.ngayCapNhat
+                  ? dayjs(sanPham.ngayCapNhat).format("DD/MM/YYYY")
+                  : "Mới"
+              }
+            />
           </Form.Item>
           <Form.Item
             label="Mô tả"
@@ -156,17 +158,62 @@ function ModalView({ id }) {
               },
             ]}
           >
-            <Input disabled value={sanPham.moTa} />
+            <Input.TextArea
+              disabled
+              value={sanPham.moTa}
+              autoSize={{ minRows: 3, maxRows: 5 }}
+            />
           </Form.Item>
           <Form.Item
-            label="Trạng thái"
+            label="Trạng Thái"
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Input disabled value={sanPham.trangThai} />
+            <Input
+              disabled
+              value={
+                sanPham.trangThai === "DANGBAN"
+                  ? "Đang bán"
+                  : sanPham.trangThai === "HETHANG"
+                  ? "Hết hàng"
+                  : ""
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            label="Chất liệu"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input disabled value={sanPham.chatLieu.tenChatLieu} />
+          </Form.Item>
+
+          <Form.Item
+            label="Thiết kế"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input disabled value={sanPham.thietKe.tenThietKe} />
+          </Form.Item>
+
+          <Form.Item
+            label="Nhóm sản phẩm"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input disabled value={sanPham.nhomSanPham.tenNhom} />
           </Form.Item>
           <Form.Item
             label="Số lượng tồn"
@@ -207,27 +254,6 @@ function ModalView({ id }) {
             ]}
           >
             <Input disabled value={sanPham.soLuongLoi} />
-          </Form.Item>
-          <Form.Item
-            label="Chất liệu"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled value={sanPham.chatLieu.tenChatLieu} />
-          </Form.Item>
-
-          <Form.Item
-            label="Thiết kế"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input disabled value={sanPham.thietKe.tenThietKe} />
           </Form.Item>
         </Form>
       </Modal>

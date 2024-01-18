@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "hoadonchitiet")
@@ -31,7 +32,18 @@ public class HoaDonChiTiet {
     @Column(name = "dongia")
     private Double donGia;
     @Column(name = "ngaytao")
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
     @Column(name = "ngaycapnhat")
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
+    @Column(name = "ghichu", columnDefinition = "nvarchar(max)")
+    private String ghiChu;
+    @Column(name = "soluongdoitra")
+    private Integer soLuongDoiTra;
+    @Column(name = "soluongloi")
+    private Integer soLuongLoi;
+    @Column(name = "soluongdoi")
+    private Integer soLuongDoi;
+    @Column(name = "trangthai")
+    //1 là đã qua đổi tra 2 là chưa
+    private Integer trangThai = 2;
 }

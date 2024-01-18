@@ -41,6 +41,11 @@ export const useSanPhamStore = {
             if (pageSize) {
                 url += 'pageSize=' + pageSize + "&"
             }
+            const search = localStorage.getItem("search")
+            localStorage.removeItem("search")
+            if (search) {
+                url += 'keyWord=' + search + "&"
+            }
             return await axiosIns.get(url)
         },
         async updateEmails(ids, data) {

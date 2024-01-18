@@ -3,6 +3,8 @@ package it.lab.controller;
 import com.google.gson.Gson;
 import it.lab.entity.*;
 import it.lab.iservice.ISanPhamService;
+import it.lab.modelcustom.request.FilterSanPham;
+import it.lab.modelcustom.request.NguoiDungRequest;
 import it.lab.modelcustom.request.SanPhamChiTietRequest;
 import it.lab.modelcustom.request.SanPhamRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,10 @@ public class SanPhamController {
             Optional<Long> thuongHieuId,
             Optional<Long> mauSacId,
             Optional<Long> loaiSanPhamId,
-            Optional<Long> kichThuocId) {
+            Optional<Long> kichThuocId,
+
+            String keyWord
+            ) {
         return ResponseEntity.ok(_sanPhamService.phanTrangSanPhamTrangChu(
                 page,
                 pageSize,
@@ -38,7 +43,22 @@ public class SanPhamController {
                 thuongHieuId.orElse(null),
                 mauSacId.orElse(null),
                 loaiSanPhamId.orElse(null),
-                kichThuocId.orElse(null))
+                kichThuocId.orElse(null),
+                keyWord
+                )
+        );
+    }
+
+    @RequestMapping(value = "/phantrangsanphamfilter", method = RequestMethod.POST)
+    public ResponseEntity<?> layDuLieuSanPhamYeuThich(
+            @RequestParam Integer page,
+            @RequestParam Integer pageSize,
+            @RequestBody FilterSanPham filterSanPham
+    ) {
+        return ResponseEntity.ok(_sanPhamService.phanTrangSanPhamTrangChu(
+                page,
+                pageSize,
+                filterSanPham)
         );
     }
 
@@ -73,7 +93,6 @@ public class SanPhamController {
         return ResponseEntity.ok(_sanPhamService.suaChatLieu(chatLieu));
     }
 
-
     @RequestMapping(value = "/laynhomsanpham", method = RequestMethod.GET)
     public ResponseEntity<?> layNhomSp() {
         return ResponseEntity.ok(_sanPhamService.layHetNhomSanPham());
@@ -103,7 +122,6 @@ public class SanPhamController {
     public ResponseEntity<?> layNhomSanPhamById(@RequestParam Long nhomSanPhamId) {
         return ResponseEntity.ok(_sanPhamService.layNhomSanPhamById(nhomSanPhamId));
     }
-
 
     @RequestMapping(value = "/laythietke", method = RequestMethod.GET)
     public ResponseEntity<?> layThietKe() {
@@ -204,10 +222,17 @@ public class SanPhamController {
     public ResponseEntity<?> laySanPhamChiTietById(@RequestParam Long sanPhamChiTietId) {
         return ResponseEntity.ok(_sanPhamService.laySanPhamChiTietById(sanPhamChiTietId));
     }
+
+    @RequestMapping(value = "/laysanphamchitietbyma", method = RequestMethod.GET)
+    public ResponseEntity<?> laySanPhamChiTietById(@RequestParam String maSp) {
+        return ResponseEntity.ok(_sanPhamService.laySanPhamChiTietByMaSp(maSp));
+    }
+
     @RequestMapping(value = "/laysanphamchitietcuasanpham", method = RequestMethod.GET)
     public ResponseEntity<?> laySanPhamChiTietCuaSanPham(@RequestParam Long sanPhamId) {
         return ResponseEntity.ok(_sanPhamService.laySanPhamChiTietCuaSanPham(sanPhamId));
     }
+
     @RequestMapping(value = "/themsanpham", method = RequestMethod.POST)
     public ResponseEntity<?> themSanPham(@RequestPart("file1") MultipartFile data1, @RequestPart("file2") MultipartFile data2, @RequestPart("data") String sanPham) throws IOException {
         Gson gson = new Gson();
@@ -218,14 +243,21 @@ public class SanPhamController {
     public ResponseEntity<?> laySanPham() {
         return ResponseEntity.ok(_sanPhamService.layHetSanPham());
     }
+
     @RequestMapping(value = "/laysanphamId", method = RequestMethod.GET)
     public ResponseEntity<?> laySanPhamBy(@RequestParam Long sanPhamId) {
         return ResponseEntity.ok(_sanPhamService.laySanPhamById(sanPhamId));
     }
 
-    @RequestMapping(value = "/suasanpham", method = RequestMethod.POST)
-    public ResponseEntity<?> suaSanPham(@RequestBody SanPhamRequest sanPhamRequest) {
-        return ResponseEntity.ok(_sanPhamService.suaSanPham(sanPhamRequest));
+
+    @RequestMapping(value = "/capnhatsanpham", method = RequestMethod.POST)
+    public ResponseEntity<?> suaSanPham(@RequestPart("file1") Optional<MultipartFile> data1,
+                                        @RequestPart("file2") Optional<MultipartFile> data2,
+                                        @RequestPart("data") String sanPham) throws IOException {
+        Gson gson = new Gson();
+        return ResponseEntity.ok(_sanPhamService.capNhatSanPham(gson.fromJson(sanPham, SanPhamRequest.class),
+                data1.isPresent() ? data1.get() : null,
+                data2.isPresent() ? data2.get() : null));
     }
 
 }

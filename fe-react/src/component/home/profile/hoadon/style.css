@@ -1,0 +1,8 @@
+.ten-san-pham:hover {
+    color: rgb(85, 85, 85);
+}
+
+.ten-san-pham {
+    color: rgb(0, 0, 0);
+    text-decoration: none !important;
+}

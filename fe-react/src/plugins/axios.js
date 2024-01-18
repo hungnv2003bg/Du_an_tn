@@ -32,14 +32,18 @@ axiosIns.interceptors.request.use(config => {
 axiosIns.interceptors.response.use(response => {
     return response
 }, error => {
-    console.log(error);
+    console.log(error.request.responseURL);
+    if (error.request.responseURL === 'http://localhost:8089/api/auth/dangnhap') {
+        window.location.href = process.env.REACT_APP_FRONTEND_URL + "login/page2";
+        return
+    }
     // Handle error
     if (error.response.status === 403) {
         // ℹ️ Logout user and redirect to login page
         // Remove "userData" from localStorage
         localStorage.removeItem('user')
         localStorage.removeItem('token')
-        window.location.href = process.env.REACT_APP_FRONTEND_URL + "login";
+        window.location.href = process.env.REACT_APP_FRONTEND_URL + "login/page1";
     }
     else {
         return Promise.reject(error)

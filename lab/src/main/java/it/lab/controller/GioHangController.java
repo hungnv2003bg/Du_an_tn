@@ -38,4 +38,10 @@ public class GioHangController {
     ) {
         return ResponseEntity.ok(_gioHangService.capNhatSoLuongGioHang(nguoiDungId, gioHangId, soLuongMoi));
     }
+
+    @RequestMapping(value = "/xoagiohang", method = RequestMethod.GET)
+    public ResponseEntity<?> xoaGioHang(@RequestParam Long gioHangId) {
+        _gioHangService.xoaGioHang(gioHangId);
+        return ResponseEntity.ok("");
+    }
 }

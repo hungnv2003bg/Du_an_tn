@@ -14,12 +14,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useChatLieuStore } from "./useChatLieuStore";
 import { useSelector } from "react-redux";
 import { FaRegPenToSquare } from "react-icons/fa6";
-function ModalCapNhat({ id, setData }) {
+import { checkEmpty } from "../../../../extensions/checkEmpty";
+function ModalCapNhat({ setData, data }) {
   const language = useSelector(selectLanguage);
-  const [chatLieu, setChatLieu] = useState({
-    id: id,
-    tenChatLieu: "",
-  });
+  const [chatLieu, setChatLieu] = useState(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -47,15 +45,16 @@ function ModalCapNhat({ id, setData }) {
     }
   };
   async function handleSuaChatLieu() {
-    if (chatLieu.tenChatLieu == "") {
+    if (!checkEmpty(chatLieu.tenChatLieu)) {
+      openNotification("error", "Hệ thống", "Vui lòng nhập đủ thông tin", "bottomRight");
       return;
     }
     const data = await useChatLieuStore.actions.suaChatLieu(chatLieu);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại chất liệu tên " + chatLieu.tenChatLieu, "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Sửa thành công", "bottomRight");
-    setChatLieu({
-      ...chatLieu,
-      tenChatLieu: "",
-    });
     setData(data.data.data);
     setIsModalOpen(false);
   }
@@ -102,7 +101,6 @@ function ModalCapNhat({ id, setData }) {
           >
             <Form.Item
               label="Tên chất liệu"
-              name="Tên chất liệu"
               rules={[
                 {
                   required: true,

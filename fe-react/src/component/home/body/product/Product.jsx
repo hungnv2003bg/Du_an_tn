@@ -4,29 +4,35 @@ import { selectLanguage } from "../../../../language/selectLanguage";
 import { Select, Spin } from "antd";
 import { selectProduct } from "./selectProduct";
 import ProductItem from "./productitem/ProductItem";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSanPhamStore } from "./useSanPhamStore";
 import productSlice from "./productSlice";
 function Product() {
   const language = useSelector(selectLanguage);
   const product = useSelector(selectProduct);
   const dispath = useDispatch();
+  const fetchData = async () => {
+    const data = await useSanPhamStore.actions.fetchSanPham(1, 10);
+    dispath(productSlice.actions.setSanPham(data));
+    dispath(productSlice.actions.setIsLoading(false));
+  };
   useEffect(() => {
     dispath(productSlice.actions.setIsLoading(true));
-    const fetchData = async () => {
-      const data = await useSanPhamStore.actions.fetchSanPham(1, 20);
-      dispath(productSlice.actions.setSanPham(data));
-      dispath(productSlice.actions.setIsLoading(false));
-    };
     fetchData();
   }, []);
+  function handleSapXep(e) {
+    dispath(
+      productSlice.actions.setSapXep({
+        data: product.data,
+        type: e,
+      })
+    );
+  }
   return (
     <>
       <div className="product-container">
         <div className="sub-filter">
-          <div className="total">
-            {"20 " + language.body.product.subFilter.sort.total}
-          </div>
+          <div className="total"></div>
           <div style={{ paddingRight: "10px" }}>
             <span className="title">
               {language.body.product.subFilter.sort.title}
@@ -34,20 +40,20 @@ function Product() {
             <Select
               showSearch
               style={{ width: 200 }}
+              onChange={handleSapXep}
               placeholder={language.body.product.subFilter.sort.select.title}
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? "").includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? "")
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? "").toLowerCase())
-              }
               options={[
                 {
                   value: "1",
-                  label: "Not Identified",
+                  label: "Mặc định",
+                },
+                {
+                  value: "2",
+                  label: "Giá giảm dần",
+                },
+                {
+                  value: "3",
+                  label: "Giá tăng dần",
                 },
               ]}
             />

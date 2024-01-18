@@ -17,6 +17,10 @@
     font-size: 22px;
 }
 
+.tag:hover {
+    cursor: pointer;
+}
+
 .filter-container .filter-item button {
     border: unset !important;
     background-color: transparent;

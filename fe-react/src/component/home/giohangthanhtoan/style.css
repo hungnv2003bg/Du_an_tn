@@ -1,4 +1,6 @@
-.content {}
+.content {
+    padding: 12px;
+}
 
 .content .title {
     width: 100%;
@@ -36,8 +38,13 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 16px;
+    border-radius: 15px;
 }
 
+.content .list .sanpham-item:hover {
+    cursor: pointer;
+    background-color: #cdcdcd;
+}
 
 ::-webkit-scrollbar {
     display: none;
@@ -49,7 +56,7 @@
 }
 
 .content .list .option .voucher {
-    height: 300px;
+    height: 150px;
     padding: 28px 24px;
     background-color: #F7F7F7;
 }
@@ -68,6 +75,11 @@
     font-size: 15px;
     text-transform: uppercase;
     margin-left: 12px;
+    cursor: pointer;
+}
+
+.content .list .option .voucher .app:hover {
+    color: #787878;
 }
 
 .checkout {
@@ -109,5 +121,10 @@
 }
 
 .btn-transaction:hover {
+    cursor: pointer;
+}
+
+.voucher:hover {
+    background-color: #e3e3e3;
     cursor: pointer;
 }

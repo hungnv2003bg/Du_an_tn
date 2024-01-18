@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SanPhamChiTietDTO {
     private Long id;
+    private String maSanPham;
     private String tenSanPham;
     private Double giaNhap;
     private Double giaBan;
@@ -25,8 +27,8 @@ public class SanPhamChiTietDTO {
     private Integer soLuongLoi;
     private Integer soLuongTraHang;
     private TrangThaiSanPhamChiTiet trangThai;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
     private MauSac mauSac;
     private KichThuoc kichThuoc;
     private SanPham sanPham;
@@ -39,6 +41,7 @@ public class SanPhamChiTietDTO {
     public static SanPhamChiTietDTO fromEntity(SanPhamChiTiet entity) {
         return new SanPhamChiTietDTO(
                 entity.getId(),
+                entity.getMaSanPham(),
                 entity.getTenSanPham(),
                 entity.getGiaNhap(),
                 entity.getGiaBan(),

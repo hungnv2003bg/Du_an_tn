@@ -2,12 +2,16 @@ package it.lab.enums;
 
 public enum TrangThaiHoaDon {
     DANGGIAO,
-    DAGIAO,
+    DAGIAO, // only
     KHACHHANGHUY,
     CUAHANGHUY,
-    DATHANHTOAN,
+    DATHANHTOAN, // bỏ
     CHOXACNHAN,
     CHOTHANHTOANBANKING,
     CHOGIAOHANG,
-    HOADONCHO
+    HOADONCHO,
+    DADOITRA,//9
+    TUCHOIDOI//10
 }
+
+

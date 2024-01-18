@@ -9,6 +9,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useHoaDonHuyStore } from "./useHoaDonHuyStore";
 import ChiTietHoaDon from "../chitiethoadon/ChiTietHoaDon";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
+import sapXepTheoNgayTao from "../../../../extensions/sapXepNgayTao";
 
 function HoaDonHuy() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -197,16 +199,22 @@ function HoaDonHuy() {
     },
     {
       title: "Giá trị HĐ",
-      dataIndex: "giaTriHd",
+      dataIndex: "hoaDonChiTietList",
       width: "15%",
       sorter: (a, b) => a.giaTriHd - b.giaTriHd,
-      render: (item) => <span>{fixMoney(item)}</span>,
+      render: (hoaDonChiTietList) => <span>
+        {fixMoney(hoaDonChiTietList ?
+          hoaDonChiTietList.reduce((pre, cur) => {
+            return pre + (cur.soLuong * cur.donGia)
+          }, 0) : 0)
+        }
+      </span>,
     },
     {
       title: "Ngày tạo",
       dataIndex: "ngayTao",
       width: "20%",
-      sorter: (a, b) => a - b,
+      render: (item) => <span>{fixNgayThang(item)}</span>,
     },
     {
       title: "Trạng thái",
@@ -218,7 +226,7 @@ function HoaDonHuy() {
       dataIndex: "key",
       width: "10%",
       align: "center",
-      render: (id) => <ChiTietHoaDon hoaDonId={id} />,
+      render: (id) => <ChiTietHoaDon hoaDonId={id} type={true} />,
     },
   ];
   const [data, setData] = useState([
@@ -276,7 +284,7 @@ function HoaDonHuy() {
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={data}
+          dataSource={sapXepTheoNgayTao(data)}
         />
         <Row
           style={{
@@ -284,24 +292,6 @@ function HoaDonHuy() {
             justifyContent: "flex-end",
           }}
         >
-          {/* <Button type="primary" danger onClick={showModal2}>
-            Hủy
-          </Button> */}
-          <Button
-            style={{
-              marginLeft: "12px",
-            }}
-            type="primary"
-            onClick={showModal}
-          >
-            Xác nhận
-          </Button>
-          <Modal title="Xác nhận hóa đơn" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <p>Bạn có chắc muốn xác nhận hóa đơn</p>
-          </Modal>
-          <Modal title="Xác nhận hủy hóa đơn" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
-            <p>Bạn có chắc muốn hủy hóa đơn</p>
-          </Modal>
         </Row>
       </div>
     </>

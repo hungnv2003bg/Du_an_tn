@@ -1,0 +1,83 @@
+search{
+    background-color: rgb(90, 90, 166);
+    width: 50px;
+}
+.sear{
+    width: 35%;
+    height: 50px;
+    margin-top: 10px;
+
+
+}
+.cart   {
+    /* border-right: 1px solid; */
+    border-radius: 0;
+    background-color: aliceblue;
+}
+
+.mid-field{
+    width: 100%;
+    display: flex;
+    /* justify-content: space-evenly; */
+}
+/* .number-phone{
+    width: 100%;
+
+}
+.info{
+    display: block;
+   background-color: aliceblue;
+}
+.info-customer{
+    padding: 10px;
+
+   
+} */
+
+.info {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+  }
+  
+  .text {
+    font-weight: bold;
+  }
+  
+  .number-phone {
+    margin: 10px;
+    margin-left: -1px;
+  }
+  
+  .info-customer {
+    margin-top: 10px;
+    padding-left: 10px; /* Để tạo khoảng cách với lề bên trái */
+  }
+  
+  .info-customer span {
+    display: block; /* Để mỗi thông tin khách hàng nằm trên một dòng */
+  }
+  .text{
+    border-right: 1px solid;
+  }
+  .info-receiver{
+    border-top: 1px solid;
+  }
+  .info-check-out{
+    display: block;
+    
+  }
+  .total-money{
+    display: flex;
+    justify-content: space-between;
+    
+  }
+  .check-out{
+    margin-top: 10px;
+  
+  }
+  .total-money span{
+    display: block;
+  margin: 10px;
+  margin-left: -1px;
+  }

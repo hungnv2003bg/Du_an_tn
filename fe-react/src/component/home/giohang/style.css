@@ -1,0 +1,20 @@
+.hover-yeuthich:hover {
+    cursor: pointer;
+}
+
+.btn-thanhtoan {
+    height: 36px;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-top: 8px;
+}
+
+.btn-thanhtoan:hover {
+    background-color: rgb(50, 50, 50);
+    color: white;
+    cursor: pointer;
+}

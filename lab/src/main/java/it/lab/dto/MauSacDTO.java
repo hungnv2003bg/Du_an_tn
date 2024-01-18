@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class MauSacDTO {
     private String tenMau;
     private String maMauCss;
     private List<SanPhamChiTiet> sanPhamChiTietList;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
 
     public static MauSacDTO fromEntity(MauSac entity) {
         return new MauSacDTO(

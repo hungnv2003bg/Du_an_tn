@@ -29,4 +29,5 @@ public class MuaTaiQuayRequest {
     private String email;
     private String nguoiNhan;
     private String hoNguoiNhan;
+    private Double phiVanChuyen;
 }

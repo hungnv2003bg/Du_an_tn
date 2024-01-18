@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +36,8 @@ public class DiaChiDTO {
     private String huyen;
     private String tinh;
     private String chiTietDiaChi;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
     private String soDienThoai;
     private Boolean laDiaChiChinh;
     private TrangThaiDiaChi trangThai;
@@ -60,6 +61,27 @@ public class DiaChiDTO {
                 entity.getSoDienThoai(),
                 entity.getLaDiaChiChinh(),
                 entity.getTrangThai(),
+                null
+        );
+    }
+    public  DiaChi toEntity() {
+        return new DiaChi(
+                this.getId(),
+                this.getNguoiDung(),
+                this.getNguoiNhan(),
+                this.getHoNguoiNhan(),
+                this.getXaId(),
+                this.getHuyenId(),
+                this.getTinhId(),
+                this.getXa(),
+                this.getHuyen(),
+                this.getTinh(),
+                this.getChiTietDiaChi(),
+                this.getNgayTao(),
+                this.getNgayCapNhat(),
+                this.getSoDienThoai(),
+                this.getLaDiaChiChinh(),
+                this.getTrangThai(),
                 null
         );
     }

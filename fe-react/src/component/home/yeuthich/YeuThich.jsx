@@ -4,7 +4,7 @@ import { selectLanguage } from "../../../language/selectLanguage";
 import { Drawer } from "antd";
 import { useState } from "react";
 import YeuThichItem from "./YeuThichItem";
-function YeuThich({ open, setOpen }) {
+function YeuThich({ open, setOpen, yeuThich, handleLayYeuThich }) {
   const language = useSelector(selectLanguage);
   const [placement, setPlacement] = useState("right");
   function handleCloseGioHang() {
@@ -20,7 +20,9 @@ function YeuThich({ open, setOpen }) {
         open={open}
         key={placement}
       >
-        <YeuThichItem />
+        {yeuThich && yeuThich.map((item) => {
+          return <YeuThichItem item={item} handleLayYeuThich={handleLayYeuThich} />
+        })}
       </Drawer>
     </>
   );

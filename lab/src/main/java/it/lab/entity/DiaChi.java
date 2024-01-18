@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -44,9 +45,9 @@ public class DiaChi {
     @Column(name = "chitietdiachi", columnDefinition = "nvarchar(max)")
     private String chiTietDiaChi;
     @Column(name = "ngaytao")
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
     @Column(name = "ngaycapnhat")
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
     @Column(name = "sodienthoai")
     private String soDienThoai;
     @Column(name = "ladiachichinh")

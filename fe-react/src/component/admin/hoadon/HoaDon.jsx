@@ -15,6 +15,8 @@ import ChoGiaoHang from "./chogiaohang/ChoGiaoHang";
 import HoaDonHuy from "./hoadonhuy/HoaDonHuy";
 import DangGiao from "./hoadondanggiao/DangGiao";
 import HoanThanh from "./hoanthanh/HoanThanh";
+import DoiTra from "./dadoitra/DoiTra";
+import TuChoiDoi from "./tuchoidoi/TuChoiDoi";
 const items = [
   {
     label: "Chờ xác nhận",
@@ -39,6 +41,16 @@ const items = [
   {
     label: "Hóa đơn hủy",
     key: "hoadonhuy",
+    icon: <AiFillCloseCircle />,
+  },
+  {
+    label: "Đã đổi trả",
+    key: "doitrathanhcong",
+    icon: <MdDoneOutline />,
+  },
+  {
+    label: "Từ chối đổi trả",
+    key: "tuchoidoitra",
     icon: <AiFillCloseCircle />,
   },
 ];
@@ -68,6 +80,8 @@ function HoaDon() {
               {current === "hoadonhuy" ? <HoaDonHuy /> : ""}
               {current === "danggiao" ? <DangGiao /> : ""}
               {current === "hoanthanh" ? <HoanThanh /> : ""}
+              {current === "doitrathanhcong" ? <DoiTra /> : ""}
+              {current === "tuchoidoitra" ? <TuChoiDoi /> : ""}
             </div>
           </div>
         </div>

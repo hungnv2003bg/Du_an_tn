@@ -1,0 +1,5 @@
+.item-nav:hover {
+    cursor: pointer;
+    color: rgb(243, 169, 169);
+    text-decoration: underline;
+}

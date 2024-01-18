@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class GioHangDTO {
     private NguoiDung nguoiMua;
     private SanPhamChiTiet sanPhamChiTiet;
     private Integer soLuong;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
 
     public static GioHangDTO fromEntity(GioHang entity) {
         NguoiDung ng = entity.getNguoiMua();

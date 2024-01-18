@@ -7,6 +7,7 @@ import {
   Divider,
   Empty,
   Input,
+  Modal,
   Radio,
   Row,
   Select,
@@ -15,7 +16,6 @@ import {
   notification,
 } from "antd";
 import { useEffect, useState } from "react";
-import { selectLanguage } from "../../../language/selectLanguage";
 import { useGioHangStore } from "./useGioHangStore";
 import { BsCart2 } from "react-icons/bs";
 import { GrMapLocation } from "react-icons/gr";
@@ -24,11 +24,8 @@ import { FaMoneyCheck } from "react-icons/fa";
 import { selectThanhToan } from "./selectThanhToan";
 import SanPhamItem from "./SanPhamItem";
 import { fixMoney } from "../../../extensions/fixMoney";
-import { redirect2VnPay } from "../../../plugins/vnpay";
 import { useGHN } from "../../../plugins/ghnapi";
-import { Option } from "antd/es/mentions";
 function GioHangThanhToan() {
-  const language = useSelector(selectLanguage);
   const thanhToan = useSelector(selectThanhToan);
   const [duLieuThanhToan, setDuLieuThanhToan] = useState(undefined);
   const [soTienPhaiTra, setSoTienPhaiTra] = useState(0);
@@ -36,60 +33,124 @@ function GioHangThanhToan() {
   const [phiVanChuyen, setPhiVanChuyen] = useState(0);
   const [ghiChu, setGhiChu] = useState("");
   const [diaChiChon, setDiaChiChon] = useState(undefined);
-  const [tinh, setTinh] = useState(undefined)
-  const [huyen, setHuyen] = useState(undefined)
-  const [xa, setXa] = useState(undefined)
-  const [phuongThucThanhThoanChon, setPhuongThucThanhToanChon] =
-    useState(undefined);
-  const [phuongThucVanChuyen, setPhuongThucVanChuyen] =
-    useState(undefined);
-  const [api, contextHolder] = notification.useNotification();
+  const [phuongThucThanhToan, setPhuongThucThanhToan] = useState(0);
+  const [maGiamGia, setMaGiamGia] = useState(undefined);
+  const [listVoucher, setListVoucher] = useState(undefined);
+  const [isMaGiamShow, setIsMaGiamShow] = useState(false);
   const options = [];
   const size = "large";
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (type, title, des, placement) => {
+    if (type === "error") {
+      api.error({
+        message: title,
+        description: des,
+        placement,
+      });
+    } else {
+      api.success({
+        message: title,
+        description: des,
+        placement,
+      });
+    }
+  };
+  function handleCheckTongThanhToanLonHon0() {
+    const check =
+      soTienPhaiTra + phiVanChuyen - (maGiamGia ? maGiamGia.giaTriGiam : 0);
+    if (check <= 0) {
+      openNotification(
+        "error",
+        "Hệ thống",
+        "Tổng giá trị đơn hàng phải lớn hơn 0đ!",
+        "bottomRight"
+      );
+      return false;
+    }
+    return true;
+  }
   async function handleTaoRequest() {
-    if (phuongThucThanhThoanChon.maPhuongThuc == "VNPAY") {
+    if (phuongThucThanhToan === 0) {
+      openNotification(
+        "error",
+        "Hệ thống",
+        "Vui lòng chọn phương thức thanh toán",
+        "bottomRight"
+      );
+      return;
+    }
+    if (duLieuThanhToan.data.sanPhamList.length === 0) {
+      openNotification("error", "Hệ thống", "Giỏ hàng trống", "bottomRight");
+      return;
+    }
+    if (!handleCheckTongThanhToanLonHon0()) {
+      return;
+    }
+    for (var item of duLieuThanhToan.data.sanPhamList) {
+      if (item.soLuong > item.sanPhamChiTiet.soLuongTon) {
+        openNotification(
+          "error",
+          "Hệ thống",
+          "Sản phẩm " +
+          item.sanPhamChiTiet.sanPham.tenSanPham +
+          " còn lại " +
+          item.sanPhamChiTiet.soLuongTon +
+          " chiếc",
+          "bottomRight"
+        );
+        return;
+      }
+    }
+    if (!diaChiChon) {
+      openNotification("error", "Hệ thống", "Chưa chọn địa chỉ", "bottomRight");
+      return;
+    }
+    if (phuongThucThanhToan === 1) {
       const request = await useGioHangStore.actions.vnPay({
         ghiChu: ghiChu,
         diaChiId: diaChiChon.id,
-        phuongThucThanhToanId: phuongThucThanhThoanChon.id,
+        phuongThucThanhToanId: phuongThucThanhToan,
         phuongThucVanChuyenId: 1,
         gia: soTienPhaiTra,
+        phiVanChuyen: phiVanChuyen,
+        voucherId: maGiamGia && maGiamGia.id,
       });
       window.location.href = request.data;
+    } else {
+      const request = await useGioHangStore.actions.taoHoaDonOnline({
+        ghiChu: ghiChu,
+        diaChiId: diaChiChon.id,
+        phuongThucThanhToanId: phuongThucThanhToan,
+        phuongThucVanChuyenId: 1,
+        gia: soTienPhaiTra,
+        phiVanChuyen: phiVanChuyen,
+        voucherId: maGiamGia && maGiamGia.id,
+      });
+      window.location.href = "http://localhost:3000/vnpay/checkout";
     }
   }
   function handleChonDiaChi(e) {
+    if (!duLieuThanhToan.data.diaChiDTOList) {
+      return;
+    }
     setDiaChiChon(
       duLieuThanhToan.data.diaChiDTOList.find((item) => {
-        return item.id == e.target.value;
+        return item.id === e.target.value;
       })
     );
+    handleTestGia();
   }
-  function handleChonPhuongThucThanhToan(e) {
-    setPhuongThucThanhToanChon(
-      duLieuThanhToan.data.phuongThucThanhToanDTOList.find((item) => {
-        return item.id == e.target.value;
-      })
-    );
-  }
-  async function handleChonPhuongThucGiao(e) {
-    setPhuongThucVanChuyen(
-      duLieuThanhToan.data.phuongThucVanChuyenDTOList.find((item) => {
-        return item.id == e.target.value;
-      })
-    );
-    if (e.target.value == 1) {
-      const giaShip = await useGHN.actions.layGia({
-        gia: soTienPhaiTra,
-        denXa: diaChiChon.xaId,
-        denHuyen: diaChiChon.huyenId,
-      })
-      setPhiVanChuyen(giaShip.data.data.total);
+  //giao hàng
+  async function handleTinhGiaVanChuyen() {
+    if (!diaChiChon || soTienPhaiTra === 0) {
+      return;
     }
-    if (e.target.value == 2) {
-
-      setPhiVanChuyen(0);
-    }
+    const giaShip = await useGHN.actions.layGia({
+      gia: soTienPhaiTra,
+      denHuyen: diaChiChon.huyenId,
+      denXa: diaChiChon.xaId,
+    });
+    setPhiVanChuyen(giaShip.data.data.total);
   }
   function handleSetSoTienPhaiTra() {
     var chuaTinhChiPhi = duLieuThanhToan.data.sanPhamList.reduce((pre, cur) => {
@@ -101,20 +162,33 @@ function GioHangThanhToan() {
     setSoTienPhaiTra(chuaTinhChiPhi);
     setSoLong(soLuongSanPham);
   }
+
+  async function handleTestGia() {
+    if (!diaChiChon || soTienPhaiTra === 0) {
+      return;
+    }
+    const giaShip = await useGHN.actions.layGia({
+      gia: soTienPhaiTra,
+      denHuyen: diaChiChon.id % 2 === 0 ? "1444" : "1204",
+      denXa: diaChiChon.id % 2 === 0 ? "20314" : "120416",
+    });
+    setPhiVanChuyen(giaShip.data.data.total);
+  }
+  async function handleLayVoucher() {
+    const data = await useGioHangStore.actions.layVoucherNguoiDung(
+      JSON.parse(localStorage.getItem("user")).data.nguoiDung.id
+    );
+    setListVoucher(data.data);
+  }
+  async function handleLayGioHang() {
+    const data = await useGioHangStore.actions.layDuLieuThanhToan(
+      JSON.parse(localStorage.getItem("user")).data.nguoiDung.id
+    );
+    setDuLieuThanhToan(data.data);
+  }
   useEffect(() => {
-    async function handleLayGioHang() {
-      const data = await useGioHangStore.actions.layDuLieuThanhToan(
-        JSON.parse(localStorage.getItem("user")).data.nguoiDung.id
-      );
-      setDuLieuThanhToan(data.data);
-      setPhuongThucThanhToanChon(data.data.data.phuongThucThanhToanDTOList[0]);
-    }
-    async function handleLayTinh() {
-      const data = await useGHN.actions.layTinh()
-      setTinh(data.data.data)
-    }
     handleLayGioHang();
-    handleLayTinh();
+    handleLayVoucher();
   }, []);
   async function handleCapNhatSoLuongSanPhamGioHang(gioHangId, soLuongMoi) {
     const data = await useGioHangStore.actions.capNhatSoLuongSanPhamGioHang({
@@ -122,6 +196,7 @@ function GioHangThanhToan() {
       gioHangId: gioHangId,
       soLuongMoi: soLuongMoi,
     });
+    handleTestGia();
     setDuLieuThanhToan(data.data);
   }
   useEffect(() => {
@@ -133,6 +208,13 @@ function GioHangThanhToan() {
       setDiaChiChon(diaChiMacDinh);
     }
   }, [duLieuThanhToan]);
+  useEffect(() => {
+    handleTestGia();
+  }, [diaChiChon]);
+  async function handleXoaGioHang(id) {
+    const data = await useGioHangStore.actions.xoaGioHang(id);
+    handleLayGioHang();
+  }
   return (
     <>
       {contextHolder}
@@ -181,19 +263,23 @@ function GioHangThanhToan() {
                 <div className="sanpham">
                   <p>{soLuong} sản phẩm</p>
                   <div className="sanpham-list">
-                    {duLieuThanhToan
-                      ? duLieuThanhToan.data.sanPhamList.map((item, index) => {
+                    {duLieuThanhToan ? (
+                      duLieuThanhToan.data.sanPhamList.map((item, index) => {
                         return (
                           <SanPhamItem
                             key={index}
                             item={item}
+                            handleXoaGioHang={handleXoaGioHang}
                             handleCapNhatSoLuongSanPhamGioHang={
                               handleCapNhatSoLuongSanPhamGioHang
                             }
+                            max={item.sanPhamChiTiet.soLuongTon}
                           />
                         );
                       })
-                      : <Empty />}
+                    ) : (
+                      <Empty />
+                    )}
                   </div>
                   <div
                     style={{
@@ -235,9 +321,9 @@ function GioHangThanhToan() {
                               (item, index) => {
                                 return (
                                   <Radio value={item.id} key={index}>
-                                    {item.nguoiDung.ho +
+                                    {item.hoNguoiNhan +
                                       " " +
-                                      item.nguoiDung.ten +
+                                      item.nguoiNhan +
                                       "," +
                                       item.soDienThoai +
                                       " " +
@@ -268,14 +354,9 @@ function GioHangThanhToan() {
                           style={{
                             width: "100%",
                           }}
+                          disabled
                           value={diaChiChon ? diaChiChon.tinh : "Chưa chọn"}
-                        >
-                          {tinh ? tinh.map((option) => (
-                            <Option key={option.code} value={option.ProvinceName}>
-                              {option.name}
-                            </Option>
-                          )) : ""}
-                        </Select>
+                        ></Select>
                       </Col>
                       <Col
                         span={8}
@@ -284,6 +365,7 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Select
+                          disabled
                           size={size}
                           style={{
                             width: "100%",
@@ -299,6 +381,7 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Select
+                          disabled
                           size={size}
                           style={{
                             width: "100%",
@@ -320,8 +403,9 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Input
+                          disabled
                           placeholder="Tên người nhận"
-                          value={diaChiChon ? diaChiChon.nguoiDung.ten : ""}
+                          value={diaChiChon ? diaChiChon.nguoiNhan : ""}
                           size={size}
                           style={{
                             backgroundColor: "#F1F1F1",
@@ -335,8 +419,9 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Input
+                          disabled
                           placeholder="Họ người nhận"
-                          value={diaChiChon ? diaChiChon.nguoiDung.ho : ""}
+                          value={diaChiChon ? diaChiChon.hoNguoiNhan : ""}
                           size={size}
                           style={{
                             backgroundColor: "#F1F1F1",
@@ -350,6 +435,7 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Input
+                          disabled
                           placeholder="SDT người nhận"
                           size={size}
                           value={diaChiChon ? diaChiChon.soDienThoai : ""}
@@ -371,6 +457,7 @@ function GioHangThanhToan() {
                         }}
                       >
                         <Input
+                          disabled
                           placeholder="Số nhà, đường"
                           size={size}
                           value={diaChiChon ? diaChiChon.chiTietDiaChi : ""}
@@ -388,6 +475,7 @@ function GioHangThanhToan() {
                         <Input
                           placeholder="Email người nhận"
                           size={size}
+                          disabled
                           value={diaChiChon ? diaChiChon.nguoiDung.email : ""}
                           style={{
                             backgroundColor: "#F1F1F1",
@@ -407,9 +495,6 @@ function GioHangThanhToan() {
                           onChange={(e) => {
                             setGhiChu(e.target.value);
                           }}
-                          style={{
-                            backgroundColor: "#F1F1F1",
-                          }}
                         />
                       </Col>
                     </Row>
@@ -420,50 +505,94 @@ function GioHangThanhToan() {
                     <p className="title">Nhập mã giảm giá ưu đãi</p>
                     <Input
                       size="large"
-                      placeholder="Nhập mã giảm giá"
+                      disabled
+                      placeholder="Chọn mã giảm giá"
                       style={{
                         backgroundColor: "white",
                         width: "70%",
                       }}
-                    />
-                    <span className="app">Áp dụng</span>
-                    <Divider></Divider>
-                    <p
-                      className="title"
-                      style={{
-                        height: "20px",
-                      }}
-                    >
-                      Ưu đãi khách hàng VIP
-                      <span
-                        style={{
-                          fontWeight: 400,
-                          fontSize: "15px",
-                          textTransform: "none",
-                        }}
-                      >
-                        {" " + " (Nếu có)"}
-                      </span>
-                    </p>
-                    <p
-                      style={{
-                        marginTop: "2px",
-                        textDecoration: "underline",
-                        fontSize: "13px",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Hướng dẫn sử dụng ưu đãi VIP
-                    </p>
-                    <Input
-                      size="large"
-                      placeholder="Nhập mã giảm giá"
-                      style={{
-                        backgroundColor: "white",
-                        width: "70%",
+                      value={maGiamGia && maGiamGia.maVoucher}
+                      onClick={() => {
+                        setMaGiamGia(undefined);
                       }}
                     />
-                    <span className="app">Áp dụng</span>
+                    <span
+                      className="app"
+                      onClick={() => {
+                        setIsMaGiamShow(true);
+                      }}
+                    >
+                      Chọn mã
+                    </span>
+                    <Modal
+                      title="Voucher tài khoản"
+                      open={isMaGiamShow}
+                      onOk={() => {
+                        setIsMaGiamShow(false);
+                      }}
+                      onCancel={() => {
+                        setIsMaGiamShow(false);
+                      }}
+                      centered
+                    >
+                      {listVoucher &&
+                        listVoucher.map((item) => {
+                          return (
+                            <>
+                              <div
+                                className="voucher"
+                                style={{
+                                  height: "60px",
+                                  borderRadius: "5px",
+                                  padding: "4px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  marginBottom: "4px",
+                                }}
+                                onClick={() => {
+                                  setMaGiamGia(item);
+                                  setIsMaGiamShow(false);
+                                }}
+                              >
+                                <div>
+                                  <img
+                                    style={{
+                                      height: "46px",
+                                      width: "auto",
+                                    }}
+                                    src="https://routine.vn/media/logo/websites/1/logo-black-2x.png"
+                                    alt="s"
+                                  />
+                                </div>
+                                <div
+                                  style={{
+                                    marginLeft: "12px",
+                                  }}
+                                >
+                                  <p
+                                    style={{
+                                      marginBottom: "2px",
+                                      fontSize: "14px",
+                                      fontWeight: 550,
+                                    }}
+                                  >
+                                    {item.tenVoucher + " - " + item.maVoucher}
+                                  </p>
+                                  <p
+                                    style={{
+                                      marginBottom: "0",
+                                      color: "red",
+                                    }}
+                                  >
+                                    {"-" + fixMoney(item.giaTriGiam)}
+                                  </p>
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })}
+                    </Modal>
                   </div>
                   <div className="checkout">
                     <p className="title">Tạm tính</p>
@@ -481,6 +610,7 @@ function GioHangThanhToan() {
                       >
                         <div>
                           <p>Số lượng</p>
+                          <p>Voucher</p>
                           <p>Tạm tính</p>
                           <p>Phí vận chuyển</p>
                         </div>
@@ -495,6 +625,7 @@ function GioHangThanhToan() {
                           <p
                             style={{
                               textAlign: "right",
+                              color: "red",
                             }}
                           >
                             {soLuong}
@@ -502,6 +633,17 @@ function GioHangThanhToan() {
                           <p
                             style={{
                               textAlign: "right",
+                              color: "red",
+                            }}
+                          >
+                            {maGiamGia
+                              ? fixMoney(maGiamGia.giaTriGiam)
+                              : "Không áp dụng"}
+                          </p>
+                          <p
+                            style={{
+                              textAlign: "right",
+                              color: "red",
                             }}
                           >
                             {fixMoney(soTienPhaiTra)}
@@ -509,6 +651,7 @@ function GioHangThanhToan() {
                           <p
                             style={{
                               textAlign: "right",
+                              color: "red",
                             }}
                           >
                             {fixMoney(phiVanChuyen)}
@@ -548,7 +691,11 @@ function GioHangThanhToan() {
                               lineHeight: "23px",
                             }}
                           >
-                            {fixMoney(soTienPhaiTra + phiVanChuyen)}
+                            {fixMoney(
+                              soTienPhaiTra +
+                              phiVanChuyen -
+                              (maGiamGia ? maGiamGia.giaTriGiam : 0)
+                            )}
                           </p>
                         </div>
                       </div>
@@ -569,25 +716,12 @@ function GioHangThanhToan() {
                         style={{
                           marginLeft: "14px",
                         }}
-                        value={
-                          phuongThucVanChuyen
-                            ? phuongThucVanChuyen.id
-                            : 0
-                        }
-                        onChange={handleChonPhuongThucGiao}
+                        value={1}
                       >
                         <Space direction="vertical">
-                          {duLieuThanhToan
-                            ? duLieuThanhToan.data.phuongThucVanChuyenDTOList.map(
-                              (item, index) => {
-                                return (
-                                  <Radio value={item.id} key={index}>
-                                    {item.tenPhuongThuc}
-                                  </Radio>
-                                );
-                              }
-                            )
-                            : ""}
+                          <Radio value={1} key={1}>
+                            Giao hàng nhanh
+                          </Radio>
                         </Space>
                       </Radio.Group>
                     </div>
@@ -606,28 +740,21 @@ function GioHangThanhToan() {
                         Phương thức thanh toán
                       </p>
                       <Radio.Group
-                        value={
-                          phuongThucThanhThoanChon
-                            ? phuongThucThanhThoanChon.id
-                            : 0
-                        }
-                        onChange={handleChonPhuongThucThanhToan}
+                        value={phuongThucThanhToan}
+                        onChange={(e) => {
+                          setPhuongThucThanhToan(e.target.value);
+                        }}
                         style={{
                           marginLeft: "14px",
                         }}
                       >
                         <Space direction="vertical">
-                          {duLieuThanhToan
-                            ? duLieuThanhToan.data.phuongThucThanhToanDTOList.map(
-                              (item, index) => {
-                                return (
-                                  <Radio value={item.id} key={index}>
-                                    {item.tenPhuongThuc}
-                                  </Radio>
-                                );
-                              }
-                            )
-                            : ""}
+                          <Radio value={1} key={1}>
+                            Thanh toán qua VNPAY
+                          </Radio>
+                          <Radio value={2} key={2}>
+                            Thanh toán khi nhận hàng
+                          </Radio>
                         </Space>
                       </Radio.Group>
                     </div>

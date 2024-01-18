@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class SanPhamRequest {
     private Long id;
-    private String maSanPham;
     private String tenSanPham;
     private Double giaNhap;
     private Double giaBan;
@@ -24,8 +23,5 @@ public class SanPhamRequest {
     private Long nhomSanPhamId;
     private Long thietKeId;
     private Long chatLieuId;
-    private Integer soLuongTon;
-    private Integer soLuongDaBan;
-    private Integer soLuongTraHang;
-    private Integer soLuongLoi;
+    private TrangThaiSanPham trangThai;
 }

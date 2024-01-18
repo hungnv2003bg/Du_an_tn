@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -42,9 +43,9 @@ public class NguoiDung {
     @Column(name = "trangthai")
     private TrangThaiNguoiDung trangThai;
     @Column(name = "ngaytao")
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
     @Column(name = "ngaycapnhat")
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayCapNhat;
     @JoinColumn(name = "rankkhachhang")
     @ManyToOne
     @JsonIgnore

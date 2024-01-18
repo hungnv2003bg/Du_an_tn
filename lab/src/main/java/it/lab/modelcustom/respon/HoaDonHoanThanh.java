@@ -1,6 +1,7 @@
 package it.lab.modelcustom.respon;
 
 import it.lab.entity.HoaDon;
+import it.lab.entity.HoaDonChiTiet;
 import it.lab.enums.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,19 +21,20 @@ public class HoaDonHoanThanh {
     private String maHoaDon;
     private String tenKhachHang;
     private String soDienThoai;
-    private Double giaTriHd;
+    private List<HoaDonChiTiet> hoaDonChiTietList;
     private LocalDateTime ngayTao;
     private String trangThai;
-
+    private LocalDateTime ngayThanhToan;
     public static HoaDonHoanThanh fromEntity(HoaDon entity) {
         return new HoaDonHoanThanh(
                 entity.getId(),
                 entity.getMaHoaDon(),
                 entity.getNguoiMua().getHo() + entity.getNguoiMua().getTen(),
                 entity.getNguoiMua().getSoDienThoai(),
-                entity.getGiaTriHd(),
+                entity.getHoaDonChiTietList(),
                 entity.getNgayTao(),
-                "Đã giao hàng"
+                "Đã giao hàng",
+                entity.getNgayThanhToan()
         );
     }
 

@@ -3,11 +3,15 @@ import "./style.css";
 import { selectLanguage } from "../../../language/selectLanguage";
 import { AiOutlineClose } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import QuantityField from "../productdetail/QuantityField";
 import { fixMoney } from "../../../extensions/fixMoney";
 import { useState } from "react";
-function SanPhamItem({ item, handleCapNhatSoLuongSanPhamGioHang }) {
-  const language = useSelector(selectLanguage);
+import { InputNumber } from "antd";
+function SanPhamItem({
+  item,
+  handleCapNhatSoLuongSanPhamGioHang,
+  max,
+  handleXoaGioHang,
+}) {
   const [soLuong, setSoLuong] = useState(item.soLuong);
   return (
     <>
@@ -74,7 +78,9 @@ function SanPhamItem({ item, handleCapNhatSoLuongSanPhamGioHang }) {
                 {"Màu " +
                   item.sanPhamChiTiet.mauSac.tenMau +
                   " - " +
-                  item.sanPhamChiTiet.kichThuoc.tenKichThuoc}
+                  item.sanPhamChiTiet.kichThuoc.tenKichThuoc +
+                  "- Số lượng còn: " +
+                  item.sanPhamChiTiet.soLuongTon}
               </span>
             </div>
             <div
@@ -84,17 +90,20 @@ function SanPhamItem({ item, handleCapNhatSoLuongSanPhamGioHang }) {
                 marginTop: "8px",
               }}
             >
-              <QuantityField
-                quantity={soLuong}
-                setQuantity={setSoLuong}
-                gioHangId={item.id}
-                handleCapNhatSoLuongSanPhamGioHang={
-                  handleCapNhatSoLuongSanPhamGioHang
-                }
-                style={{
-                  height: "40px",
-                  width: "40px",
-                  size: "12px",
+              <InputNumber
+                min={0}
+                max={max}
+                defaultValue={soLuong}
+                value={soLuong}
+                onChange={(e) => {
+                  if (!e) {
+                    return;
+                  }
+                  if (isNaN(e)) {
+                    return;
+                  }
+                  handleCapNhatSoLuongSanPhamGioHang(item.id, e);
+                  setSoLuong(e);
                 }}
               />
             </div>
@@ -112,6 +121,9 @@ function SanPhamItem({ item, handleCapNhatSoLuongSanPhamGioHang }) {
           style={{
             width: "3%",
             fontSize: "12px !important",
+          }}
+          onClick={() => {
+            handleXoaGioHang(item.id);
           }}
         >
           <AiOutlineClose />

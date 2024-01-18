@@ -14,12 +14,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNhomSanPhamStore } from "./useNhomSanPhamStore";
 import { useSelector } from "react-redux";
 import { FaRegPenToSquare } from "react-icons/fa6";
-function ModalCapNhat({ id, setData }) {
+import { checkEmpty } from "../../../../extensions/checkEmpty";
+function ModalCapNhat({ data, setData }) {
   const language = useSelector(selectLanguage);
-  const [chatLieu, setChatLieu] = useState({
-    id: id,
-    tenKichThuoc: "",
-  });
+  const [chatLieu, setChatLieu] = useState(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -47,15 +45,16 @@ function ModalCapNhat({ id, setData }) {
     }
   };
   async function handleSuaChatLieu() {
-    if (chatLieu.tenKichThuoc == "") {
+    if (!checkEmpty(chatLieu.tenKichThuoc)) {
+      openNotification("error", "Hệ thống", "Vui lòng nhập đủ thông tin", "bottomRight");
       return;
     }
     const data = await useNhomSanPhamStore.actions.suaChatLieu(chatLieu);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại tên " + chatLieu.tenKichThuoc, "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Sửa thành công", "bottomRight");
-    setChatLieu({
-      ...chatLieu,
-      tenKichThuoc: "",
-    });
     setData(data.data.data);
     setIsModalOpen(false);
   }
@@ -102,7 +101,6 @@ function ModalCapNhat({ id, setData }) {
           >
             <Form.Item
               label="Tên kích thước"
-              name="Tên kích thước"
               rules={[
                 {
                   required: true,

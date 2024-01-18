@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class SanPhamYeuThichDTO {
     private Long id;
     private NguoiDung nguoiDung;
     private SanPhamChiTiet sanPhamChiTiet;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
 
     public static SanPhamYeuThichDTO fromEntity(SanPhamYeuThich entity) {
         return new SanPhamYeuThichDTO(entity.getId(), entity.getNguoiDung(), entity.getSanPhamChiTiet(), entity.getNgayTao(), entity.getNgayCapNhat());

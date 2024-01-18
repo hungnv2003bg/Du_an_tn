@@ -14,12 +14,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNhomSanPhamStore } from "./useNhomSanPhamStore";
 import { useSelector } from "react-redux";
 import { FaRegPenToSquare } from "react-icons/fa6";
-function ModalCapNhat({ id, setData }) {
+import { checkEmpty } from "../../../../extensions/checkEmpty";
+function ModalCapNhat({ data, setData }) {
   const language = useSelector(selectLanguage);
-  const [chatLieu, setChatLieu] = useState({
-    id: id,
-    tenThietKe: "",
-  });
+  const [chatLieu, setChatLieu] = useState(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -47,15 +45,16 @@ function ModalCapNhat({ id, setData }) {
     }
   };
   async function handleSuaChatLieu() {
-    if (chatLieu.tenThietKe == "") {
+    if (!checkEmpty(chatLieu.tenThietKe)) {
+      openNotification("error", "Hệ thống", "Vui lòng nhập đủ thông tin", "bottomRight");
       return;
     }
     const data = await useNhomSanPhamStore.actions.suaChatLieu(chatLieu);
     openNotification("success", "Hệ thống", "Sửa thành công", "bottomRight");
-    setChatLieu({
-      ...chatLieu,
-      tenThietKe: "",
-    });
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại thiết kế " + chatLieu.tenChatLieu, "bottomRight");
+      return
+    }
     setData(data.data.data);
     setIsModalOpen(false);
   }

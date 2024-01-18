@@ -46,6 +46,10 @@ function ModalXoa({ id, setData }) {
   };
   async function handleXoaChatLieu() {
     const data = await useNhomSanPhamStore.actions.xoaChatLieuById(id);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Màu sắc đang được sử dụng xóa thất bại", "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Xóa thành công", "bottomRight");
     setData(data.data.data);
     setIsModalOpen(false);

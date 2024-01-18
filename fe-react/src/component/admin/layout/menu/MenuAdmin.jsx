@@ -3,16 +3,19 @@ import "./style.css";
 import { selectLanguage } from "../../../../language/selectLanguage";
 import { BsFillBoxSeamFill, BsShopWindow } from "react-icons/bs";
 import { RiBillLine } from "react-icons/ri";
-import { FaBuffer, FaUserFriends, FaTag  } from "react-icons/fa";
+import { FaBuffer, FaUserFriends, FaTag } from "react-icons/fa";
 import { SiZerodha } from "react-icons/si";
 import { AiOutlineBgColors } from "react-icons/ai";
 import { SiSteelseries } from "react-icons/si";
 import { MdGroupWork, MdArchitecture } from "react-icons/md";
 import { TbLayoutDashboard, TbPackages } from "react-icons/tb";
-import { BsPercent } from 'react-icons/bs';
 import { useState } from "react";
 import { Menu } from "antd";
+import { RiRefundFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
+import { BsPercent } from "react-icons/bs";
+import { FcIdea } from "react-icons/fc";
+import { checkAdmin, checkRole } from "../../../../extensions/checkRole";
 function getItem(label, key, icon, children, type) {
   return {
     key,
@@ -73,32 +76,35 @@ const items = [
     <RiBillLine />
   ),
   getItem(
-    <Link to={"/admin/sanpham"}>Quản lý người dùng</Link>,
-    "63",
-    <FaUserFriends />
-  ),
-  getItem(
-    <Link to={"/admin/sanpham"}>Bán hàng tại quầy</Link>,
+    <Link to={"/admin/bantaiquay"}>Bán hàng tại quầy</Link>,
     "62",
     <BsShopWindow />
   ),
-  getItem("Quản lý sự kiện", "sub5", <FaTag  />, [
-    getItem(
-      <Link to={"/admin/sukiengiamgia"}>Sự kiện giảm giá</Link>,
-      "2",
-      <BsPercent  />
-    ),
-    getItem(
-      <Link to={"/admin/sukiengiamgia/sanphamsukien"}>Sản phẩm sự kiện</Link>,
-      "3",
-      <TbPackages />
-    ),
-  ]),
+  getItem(<Link to={"/admin/doitra"}>Đổi trả</Link>, "64", <RiRefundFill />),
+  getItem(<Link to={"/admin/voucher"}>Voucher</Link>, "68", <BsPercent />),
 ];
-
+if (checkAdmin()) {
+  items.push(
+    getItem(
+      <Link to={"/admin/nguoidung"}>Quản lý người dùng</Link>,
+      "63",
+      <FaUserFriends />
+    )
+  );
+  items.push(
+    getItem("Đánh giá", "sub5", <FaTag />, [
+      getItem(
+        <Link to={"/admin/crm"}>Sản phẩm doanh thu</Link>,
+        "65",
+        <FcIdea />
+      ),
+    ])
+  );
+}
 const rootSubmenuKeys = ["sub1", "sub2", "sub4"];
 function MenuAdmin() {
-  const language = useSelector(selectLanguage);
+  checkRole();
+
   const [openKeys, setOpenKeys] = useState(["sub1"]);
 
   const onOpenChange = (keys) => {

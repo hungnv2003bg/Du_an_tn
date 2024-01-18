@@ -14,5 +14,5 @@ public interface IGioHangService {
 
     public ResponObject<CheckOut, APIStatus> capNhatSoLuongGioHang(Long nguoiDungId, Long gioHangId, Integer soLuongMoi);
 
-    public ResponObject<String, APIStatus> xoaGioHang(Long gioHangId);
+    public void xoaGioHang(Long gioHangId);
 }

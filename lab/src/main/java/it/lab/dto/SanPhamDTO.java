@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class SanPhamDTO {
     private String hinhAnh2;
     private Double giaNhap;
     private Double giaBan;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
     private String moTa;
     private TrangThaiSanPham trangThai;
     private Integer soLuongTon;
@@ -36,7 +37,6 @@ public class SanPhamDTO {
     private ThietKe thietKe;
     private NhomSanPham nhomSanPham;
     private ChatLieu chatLieu;
-    private List<SanPhamSuKien> sanPhamSuKienList;
     private List<HinhAnhSanPham> hinhAnhSanPhamList;
     private List<SanPhamChiTiet> sanPhamChiTietList;
 
@@ -60,7 +60,6 @@ public class SanPhamDTO {
                 entity.getThietKe(),
                 entity.getNhomSanPham(),
                 entity.getChatLieu(),
-                entity.getSanPhamSuKienList(),
                 entity.getHinhAnhSanPhamList(),
                 entity.getSanPhamChiTietList()
         );

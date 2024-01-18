@@ -11,4 +11,6 @@ public interface IThanhToan {
     public ResponObject<CheckOut, APIStatus> taoHoaDonOnline(TaoHoaDonOnline yeuCau);
 
     public String taoHoaDonOnlineVnPay(TaoHoaDonOnline yeuCau);
+
+    public void checkThanhToanVNPay(String maHD, Long trangThai);
 }

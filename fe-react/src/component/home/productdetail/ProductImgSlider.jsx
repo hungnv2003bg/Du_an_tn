@@ -7,14 +7,12 @@ function ProductImgSlider({ imgs }) {
         return {
           original: item.linkHinhAnh,
           thumbnail: item.linkHinhAnh,
-          description: "Description 1",
         };
       })
     : [
         {
           original: "",
           thumbnail: "",
-          description: "Description 1",
         },
       ];
 

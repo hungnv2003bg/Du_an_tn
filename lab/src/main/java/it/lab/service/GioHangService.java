@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,8 @@ public class GioHangService implements IGioHangService {
     @Autowired
     private SanPhamChiTietRepo _sanPhamChiTietRepo;
     @Autowired
-private IThanhToan _thanhToanService;
+    private IThanhToan _thanhToanService;
+
     @Override
     public ResponObject<String, APIStatus> themSanPhamChiTietVaoGioHang(Long nguoiDungId, Long sanPhamChiTietId, Integer soLuong) {
         Optional<NguoiDung> ng = _nguoiDungRepo.findById(nguoiDungId);
@@ -37,7 +39,7 @@ private IThanhToan _thanhToanService;
         Optional<GioHang> gioHang = _gioHangRepo.findGioHangByNguoiMuaAndSanPhamChiTiet(ng.get(), spct.get());
         if (gioHang.isEmpty()) {
             GioHang gh = new GioHang();
-            gh.setNgayTao(LocalDate.now());
+            gh.setNgayTao(LocalDateTime.now());
             gh.setNguoiMua(ng.get());
             gh.setSoLuong(soLuong);
             gh.setSanPhamChiTiet(spct.get());
@@ -61,6 +63,9 @@ private IThanhToan _thanhToanService;
 
     @Override
     public ResponObject<CheckOut, APIStatus> capNhatSoLuongGioHang(Long nguoiDungId, Long gioHangId, Integer soLuongMoi) {
+        if (soLuongMoi == null) {
+            return _thanhToanService.layDuLieuThanhToan(nguoiDungId);
+        }
         Optional<GioHang> gh = _gioHangRepo.findById(gioHangId);
         if (gh.isEmpty()) {
             return new ResponObject<CheckOut, APIStatus>(null, APIStatus.THATBAI, "Giỏ hàng không tồn tại!");
@@ -75,12 +80,8 @@ private IThanhToan _thanhToanService;
     }
 
     @Override
-    public ResponObject<String, APIStatus> xoaGioHang(Long gioHangId) {
+    public void xoaGioHang(Long gioHangId) {
         Optional<GioHang> gh = _gioHangRepo.findById(gioHangId);
-        if (gh.isEmpty()) {
-            return new ResponObject<String, APIStatus>(null, APIStatus.THATBAI, "Giỏ hàng không tồn tại!");
-        }
         _gioHangRepo.delete(gh.get());
-        return new ResponObject<String, APIStatus>(null, APIStatus.THANHCONG, "Xóa thành công!");
     }
 }

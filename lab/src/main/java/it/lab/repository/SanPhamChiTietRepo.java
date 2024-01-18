@@ -17,4 +17,9 @@ public interface SanPhamChiTietRepo extends JpaRepository<SanPhamChiTiet, Long> 
     public Optional<SanPhamChiTiet> findSanPhamChiTietByMaSanPham(String maSanPham);
 
     public List<SanPhamChiTiet> findSanPhamChiTietsByMauSacAndKichThuocAndSanPham(MauSac mauSac, KichThuoc kichThuoc, SanPham sanPham);
+
+    public boolean existsByMauSac(MauSac mauSac);
+
+    public boolean existsByKichThuoc(KichThuoc kichThuoc);
 }
+

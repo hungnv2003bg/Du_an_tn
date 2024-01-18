@@ -14,12 +14,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNhomSanPhamStore } from "./useNhomSanPhamStore";
 import { useSelector } from "react-redux";
 import { FaRegPenToSquare } from "react-icons/fa6";
-function ModalCapNhat({ id, setData }) {
+import { checkEmpty } from "../../../../extensions/checkEmpty";
+function ModalCapNhat({ data, setData }) {
   const language = useSelector(selectLanguage);
-  const [chatLieu, setChatLieu] = useState({
-    id: id,
-    tenNhom: "",
-  });
+  const [chatLieu, setChatLieu] = useState(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -47,16 +45,16 @@ function ModalCapNhat({ id, setData }) {
     }
   };
   async function handleSuaChatLieu() {
-    if (chatLieu.tenMau == "" || chatLieu.maMauCss == "") {
+    if (!checkEmpty(chatLieu.tenMau) || !checkEmpty(chatLieu.maMauCss)) {
+      openNotification("error", "Hệ thống", "Vui lòng nhập đủ thông tin", "bottomRight");
       return;
     }
     const data = await useNhomSanPhamStore.actions.suaChatLieu(chatLieu);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại tên " + chatLieu.tenMau, "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Sửa thành công", "bottomRight");
-    setChatLieu({
-      ...chatLieu,
-      tenMau: "",
-      maMauCss: "",
-    });
     setData(data.data.data);
     setIsModalOpen(false);
   }
@@ -103,7 +101,6 @@ function ModalCapNhat({ id, setData }) {
           >
             <Form.Item
               label="Tên màu"
-              name="Tên màu"
               rules={[
                 {
                   required: true,
@@ -122,7 +119,6 @@ function ModalCapNhat({ id, setData }) {
             </Form.Item>
             <Form.Item
               label="Mã màu Css"
-              name="Mã màu Css"
               rules={[
                 {
                   required: true,

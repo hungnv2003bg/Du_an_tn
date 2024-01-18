@@ -6,22 +6,18 @@ import { selectLanguage } from "../../../language/selectLanguage";
 import { SearchOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { Button, Image, Input, Space, Table, Tag,Form } from "antd";
+import { Button, Image, Input, Space, Table, Tag } from "antd";
 import { useSanPhamStore } from "./useSanPhamStore";
 import { BsFillPencilFill } from "react-icons/bs";
 import ModalThemSua from "./ModalThemSua";
 import ModalView from "./ModalView";
-import { useForm } from "antd/es/form/Form";
-
+import ModalSua from "./ModalSua";
 function Product() {
   const language = useSelector(selectLanguage);
   const dispath = useDispatch();
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const [chatLieu, setChatLieu] = useState({
-    tenNhom: "",
-  });
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -138,24 +134,7 @@ function Product() {
     nhomSanPham: [],
     chatLieu: [],
   });
-  const [sanPham, setSanPham] = useState([
-    {
-      key: "1",
-      maSanPham: "ABC",
-      hinhAnh1: "",
-      soLuongTon: 32,
-
-      chatLieu: {
-        tenChatLieu: "abc",
-      },
-      thietKe: {
-        tenThietKe: "abc",
-      },
-      nhomSanPham: {
-        tenNhom: "abc",
-      },
-    },
-  ]);
+  const [sanPham, setSanPham] = useState(undefined);
   const [filteredInfo, setFilteredInfo] = useState({});
   const columns = [
     {
@@ -198,7 +177,7 @@ function Product() {
       title: "Chất liệu",
       dataIndex: "chatLieu",
       key: "address",
-      width: "7.5%",
+      width: "10%",
       render: (chatLieu) => <span>{chatLieu.tenChatLieu}</span>,
       // filters: filter.chatLieu,
       // filteredValue: filteredInfo.address || null,
@@ -208,7 +187,7 @@ function Product() {
       title: "Nhóm sản phẩm",
       dataIndex: "nhomSanPham",
       key: "address",
-      width: "7.5%",
+      width: "10%",
       render: (nhomSanPham) => <span>{nhomSanPham.tenNhom}</span>,
       // filters: filter.nhomSanPham,
       // filteredValue: filteredInfo.address || null,
@@ -218,7 +197,7 @@ function Product() {
       title: "Thiết kế",
       dataIndex: "thietKe",
       key: "address",
-      width: "7.5%",
+      width: "10%",
       render: (thietKe) => <span>{thietKe.tenThietKe}</span>,
       // filters: filter.thietKe,
       // filteredValue: filteredInfo.address || null,
@@ -238,18 +217,15 @@ function Product() {
           }}
         >
           <ModalView id={id} />
-          <ModalThemSua id={id} setData={setData} />
+          <ModalSua id={id} thuocTinh={thuocTinh} setData={fetchData} />
         </div>
       ),
     },
   ];
-  const [form] = useForm()
-  const [data, setData] = useState([]);
-  async function layDuLieu() {
-    const data = await useSanPhamStore.actions.fetchSanPham();
-    setData(data.data.data);
-  }
   function handleSetFilter(source) {
+    if (!source) {
+      return
+    }
     const thietKe = [];
     const nhomSanPham = [];
     const chatLieu = [];
@@ -296,7 +272,10 @@ function Product() {
   }
   const [thuocTinh, setThuocTinh] = useState(undefined);
   const fetchData = async () => {
-    const data = await useSanPhamStore.actions.fetchSanPham(1, 10000);
+    const data = await useSanPhamStore.actions.layHetSanPham();
+    if (data.data.data.length == 0) {
+      return
+    }
     setSanPham(data.data.data);
     handleSetFilter(data.data.data);
     // dispath(productSlice.actions.setSanPham(data));
@@ -322,7 +301,7 @@ function Product() {
         <MenuAdmin />
         <div className="body-container">
           <div className="content">
-            <div className="header-status background-color">
+            <div className="modalThem">
               <ModalThemSua
                 type={1}
                 thuocTinh={thuocTinh}

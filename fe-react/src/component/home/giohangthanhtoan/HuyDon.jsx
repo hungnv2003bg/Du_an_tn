@@ -4,23 +4,34 @@ import Header from "../../common/header/Header";
 import { selectLanguage } from "../../../language/selectLanguage";
 import { useParams } from "react-router-dom";
 import { QRCode } from "antd";
+import { useGioHangStore } from "./useGioHangStore";
+import { useEffect } from "react";
 function HuyDon() {
-    const language = useSelector(selectLanguage);
     const search = window.location.search;
     const params = new URLSearchParams(search);
     const vnp_TransactionStatus = params.get('vnp_TransactionStatus');
-    const vnp_BankCode = params.get('vnp_BankCode');
+    const vnp_TxnRef = params.get('vnp_TxnRef');
+    async function handleCheckThanhToan() {
+        const data = await useGioHangStore.actions.checkThanhToan({
+            maHd: vnp_TxnRef,
+            status: vnp_TransactionStatus
+        })
+    }
+    useEffect(() => {
+        handleCheckThanhToan()
+    }, [])
     return (
         <>
             <Header />
-            {vnp_TransactionStatus == 0 ? <div style={{
+
+            {vnp_TransactionStatus === "00" ? <div style={{
             }}>
                 <div style={{
                     display: 'flex',
                     justifyContent: 'center',
                     width: "100%"
                 }}>
-                    <QRCode size={320} type="canvas" value="https://ant.design/" />
+                    {/* <QRCode size={320} type="canvas" value="https://ant.design/" /> */}
                 </div>
                 <div style={{
                     display: 'flex',
@@ -40,11 +51,10 @@ function HuyDon() {
                     marginTop: '14px',
 
                 }}>
-                    <div className="btn-transaction">Lịch sử giao dịch</div>
-                    <div className="btn-transaction">Tải biên lai</div>
+                    {/* <div className="btn-transaction">Lịch sử giao dịch</div>
+                    <div className="btn-transaction">Tải biên lai</div> */}
                 </div>
-            </div> : ""}
-            {vnp_TransactionStatus == 2 ? <div style={{
+            </div> : <div style={{
             }}>
                 <div style={{
                     display: 'flex',
@@ -72,7 +82,7 @@ function HuyDon() {
                 }}>
                     <div className="btn-transaction">Lịch sử giao dịch</div>
                 </div>
-            </div> : ""}
+            </div>}
 
         </>
     );

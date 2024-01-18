@@ -5,19 +5,19 @@ import ProductImgSlider from "./ProductImgSlider";
 import { fixMoney } from "../../../extensions/fixMoney";
 import { CiRuler } from "react-icons/ci";
 import { AiOutlineHeart } from "react-icons/ai";
-import { Button, HStack, Input, useNumberInput } from "@chakra-ui/react";
-import { Rate, notification } from "antd";
+import { useNumberInput } from "@chakra-ui/react";
+import { Col, Rate, Row, notification } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSanPhamChiTiet } from "./useSanPhamChiTiet";
 import { selectUser } from "../../login/selectUser";
-import { selectNotiApi } from "../../../redux/selectNoti";
 import { selectLanguage } from "../../../language/selectLanguage";
 import QuantityField from "./QuantityField";
+import ChonSize from "./ChonSize";
+import Footer from "../footer/footer";
 function ProductDetail() {
   const language = useSelector(selectLanguage);
   const [api, contextHolder] = notification.useNotification();
-
   const user = useSelector(selectUser);
   const { id } = useParams();
   const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
@@ -203,6 +203,46 @@ function ProductDetail() {
     }
     handleLayDuLieu();
   }, []);
+
+  async function handleThemYeuThich() {
+    if (!handleSetSanPhamTuOption()) {
+      openNotification(
+        "error",
+        language.systemNotification.system,
+        language.chiTietSanPham.chonSanPham,
+        "bottomRight"
+      );
+      return;
+    }
+    if (sanPhamDangTim == null) {
+      openNotification(
+        "error",
+        language.systemNotification.system,
+        language.chiTietSanPham.chonSanPham,
+        "bottomRight"
+      );
+      return;
+    }
+    if (user.nguoiDung.id === -1) {
+      openNotification(
+        "error",
+        language.systemNotification.system,
+        language.chiTietSanPham.chuaDangNhap,
+        "bottomRight"
+      );
+      return;
+    }
+    const data = await useSanPhamChiTiet.actions.themYeuThich({
+      nguoiDungId: user.nguoiDung.id,
+      sanPhamChiTietId: sanPhamDangTim.id,
+    });
+    openNotification(
+      "success",
+      language.systemNotification.system,
+      "Thành công",
+      "bottomRight"
+    );
+  }
   return (
     <>
       {contextHolder}
@@ -320,22 +360,7 @@ function ProductDetail() {
                 >
                   {sanPhamChon.kichThuoc.tenKichThuoc}
                 </span>
-                <span
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    fontSize: "14px",
-                    textDecoration: "underline",
-                    fontWeight: 400,
-                  }}
-                >
-                  <CiRuler
-                    style={{
-                      fontSize: "24px",
-                    }}
-                  />
-                  Hướng dẫn chọn size
-                </span>
+                <ChonSize />
               </div>
               <div
                 style={{
@@ -353,7 +378,7 @@ function ProductDetail() {
                         handleChonKichThuoc(item);
                       }}
                     >
-                      <span>{item.maKichThuoc}</span>
+                      <span>{item.tenKichThuoc}</span>
                     </div>
                   );
                 })}
@@ -424,6 +449,8 @@ function ProductDetail() {
                 <span>Thêm vào giỏ hàng</span>
               </div>
               <div
+                onClick={handleThemYeuThich}
+                className="heart-like"
                 style={{
                   fontSize: "36px",
                   marginLeft: "20px",
@@ -431,6 +458,7 @@ function ProductDetail() {
                   display: "flex",
                   alignItems: "center",
                   justifyItems: "center",
+                  cursor: "pointer",
                 }}
               >
                 <AiOutlineHeart />
@@ -450,25 +478,74 @@ function ProductDetail() {
         }}
       >
         <div className="danh-gia">
-          <h3>Đánh giá sản phẩm</h3>
+          <h3>Thông tin sản phẩm</h3>
           <div className="star">
             <div
               style={{
-                width: "30%",
+                padding: "12px",
               }}
             >
-              <Rate allowHalf defaultValue={2.5} />
-            </div>
-            <div
-              style={{
-                width: "70%",
-              }}
-            >
-              <Rate allowHalf defaultValue={2.5} />
+              <Row
+                style={{
+                  width: "100%",
+                }}
+              >
+                <Col span={24}>
+                  Thiết kế:{" "}
+                  <span
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {sanPham.sanPhamDTO
+                      ? sanPham.sanPhamDTO.thietKe.tenThietKe
+                      : ""}
+                  </span>
+                </Col>
+                <Col span={24}>
+                  Nhóm sản phẩm:{" "}
+                  <span
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {sanPham.sanPhamDTO
+                      ? sanPham.sanPhamDTO.nhomSanPham.tenNhom
+                      : ""}
+                  </span>
+                </Col>
+                <Col span={24}>
+                  Chất liệu:{" "}
+                  <span
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {sanPham.sanPhamDTO
+                      ? sanPham.sanPhamDTO.chatLieu.tenChatLieu
+                      : ""}
+                  </span>
+                </Col>
+                <Col span={24}>
+                  Mô tả:{" "}
+                  <span
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {sanPham.sanPhamDTO ? sanPham.sanPhamDTO.moTa : ""}
+                  </span>
+                </Col>
+              </Row>
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

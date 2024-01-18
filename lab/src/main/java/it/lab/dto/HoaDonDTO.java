@@ -30,20 +30,28 @@ public class HoaDonDTO {
     private PhuongThucThanhToan phuongThucThanhToan;
     private PhuongThucVanChuyen phuongThucVanChuyen;
     private String ghiChu;
+    private LocalDateTime ngayThanhToan;
     private LocalDateTime ngayTao;
     private LocalDateTime ngayCapNhat;
-    private LocalDate ngayGiao;
+    private LocalDateTime ngayGiao;
     private Double giaTriHd;
     private Double phiVanChuyen;
     private TrangThaiHoaDon trangThai;
-    private NguoiDungVoucher voucherGiaoHang;
-    private SanPhamSuKien sanPhamSuKien;
-    private NguoiDungVoucher voucherGiam;
+    private NguoiDungVoucherDTO voucherGiam;
     private NguoiDung nhanVien;
+    private String lyDoTuChoiDoi;
     private List<BinhLuanDanhGia> binhLuanDanhGiaList;
     private List<HoaDonChiTiet> hoaDonChiTietList;
+    private List<HoaDonChiTiet> truocDo;
+    private List<HoaDonChiTiet> sauKhiDoi;
 
     public static HoaDonDTO fromEntity(HoaDon entity) {
+        List<HoaDonChiTiet> truocDo = new ArrayList<>();
+        List<HoaDonChiTiet> sauKhiDoi = new ArrayList<>();
+        if (entity.getHoaDonChiTietList() != null) {
+            truocDo = entity.getHoaDonChiTietList().stream().filter(x -> x.getTrangThai() == 1).toList();
+            sauKhiDoi = entity.getHoaDonChiTietList().stream().filter(x -> x.getTrangThai() == 2).toList();
+        }
         return new HoaDonDTO(
                 entity.getId(),
                 entity.getNguoiMua(),
@@ -52,18 +60,20 @@ public class HoaDonDTO {
                 entity.getPhuongThucThanhToan(),
                 entity.getPhuongThucVanChuyen(),
                 entity.getGhiChu(),
+                entity.getNgayThanhToan(),
                 entity.getNgayTao(),
                 entity.getNgayCapNhat(),
                 entity.getNgayGiao(),
                 entity.getGiaTriHd(),
                 entity.getPhiGiaoHang(),
                 entity.getTrangThai(),
-                entity.getVoucherGiaoHang(),
-                entity.getSanPhamSuKien(),
-                entity.getVoucherGiam(),
+                entity.getVoucherGiam() != null ? NguoiDungVoucherDTO.fromEntity(entity.getVoucherGiam()) : null,
                 entity.getNhanVien(),
+                entity.getLyDoTuChoiTra(),
                 entity.getBinhLuanDanhGiaList(),
-                entity.getHoaDonChiTietList()
+                entity.getHoaDonChiTietList(),
+                truocDo,
+                sauKhiDoi
         );
     }
 

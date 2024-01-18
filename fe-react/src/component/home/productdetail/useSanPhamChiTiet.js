@@ -10,5 +10,9 @@ export const useSanPhamChiTiet = {
             const response = await axiosIns.get(`/api/giohang/themvaogiohang?nguoiDungId=${payload.nguoiDungId}&sanPhamChiTietId=${payload.sanPhamChiTietId}&soLuong=${payload.soLuong}`)
             return response
         },
+        async themYeuThich(payload) {
+            const response = await axiosIns.get(`/api/yeuthich/taoyeuthich?nguoiDungId=${payload.nguoiDungId}&sanPhamChiTietId=${payload.sanPhamChiTietId}`)
+            return response
+        },
     },
 }

@@ -6,5 +6,13 @@ import it.lab.entity.NguoiDung;
 import it.lab.enums.APIStatus;
 
 public interface IAuthService {
-    public ResponObject<NguoiDungDTO, APIStatus> dangKyTaiKhoan(NguoiDung nguoiDung);
+    public Long dangKyTaiKhoan(NguoiDung nguoiDung);
+
+    public Integer xacNhanTaiKhoan(String code);
+
+    public Integer guiLaiMa(Long id);
+
+    public Integer quenMatKhau(String email);
+
+    public Integer doiMatKhau(String code,String matKhauMoi);
 }

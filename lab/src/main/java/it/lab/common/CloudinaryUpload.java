@@ -6,10 +6,7 @@ import com.cloudinary.utils.ObjectUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +23,8 @@ public class CloudinaryUpload {
     ));
 
     public static String uploadFile(MultipartFile file) throws IOException {
+
+
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("No file selected.");
         }

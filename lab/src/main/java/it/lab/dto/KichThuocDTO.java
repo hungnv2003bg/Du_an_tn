@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class KichThuocDTO {
     private String maKichThuoc;
     private String tenKichThuoc;
     private List<SanPhamChiTiet> sanPhamChiTietList;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
 
     public static KichThuocDTO fromEntity(KichThuoc entity) {
         return new KichThuocDTO(

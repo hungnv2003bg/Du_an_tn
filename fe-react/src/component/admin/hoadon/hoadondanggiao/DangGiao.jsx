@@ -9,6 +9,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useHoaDonHuyStore } from "./useHoaDonHuyStore";
 import ChiTietHoaDon from "../chitiethoadon/ChiTietHoaDon";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
+import sapXepTheoNgayTao from "../../../../extensions/sapXepNgayTao";
 
 function DangGiao() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -196,17 +198,24 @@ function DangGiao() {
       ...getColumnSearchProps("soDienThoai"),
     },
     {
+
       title: "Giá trị HĐ",
-      dataIndex: "giaTriHd",
+      dataIndex: "hoaDonChiTietList",
       width: "15%",
       sorter: (a, b) => a.giaTriHd - b.giaTriHd,
-      render: (item) => <span>{fixMoney(item)}</span>,
+      render: (hoaDonChiTietList) => <span>
+        {fixMoney(hoaDonChiTietList ?
+          hoaDonChiTietList.reduce((pre, cur) => {
+            return pre + (cur.soLuong * cur.donGia)
+          }, 0) : 0)
+        }
+      </span>,
     },
     {
       title: "Ngày tạo",
       dataIndex: "ngayTao",
       width: "20%",
-      sorter: (a, b) => a - b,
+      render: (item) => <span>{fixNgayThang(item)}</span>,
     },
     {
       title: "Trạng thái",
@@ -218,7 +227,7 @@ function DangGiao() {
       dataIndex: "key",
       width: "10%",
       align: "center",
-      render: (id) => <ChiTietHoaDon hoaDonId={id} />,
+      render: (id) => <ChiTietHoaDon hoaDonId={id} type={true} />,
     },
   ];
   const [data, setData] = useState([
@@ -276,7 +285,7 @@ function DangGiao() {
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={data}
+          dataSource={sapXepTheoNgayTao(data)}
         />
         <Row
           style={{
@@ -284,9 +293,7 @@ function DangGiao() {
             justifyContent: "flex-end",
           }}
         >
-          {/* <Button type="primary" danger onClick={showModal2}>
-            Hủy
-          </Button> */}
+
           <Button
             style={{
               marginLeft: "12px",
@@ -296,7 +303,7 @@ function DangGiao() {
           >
             Xác nhận
           </Button>
-          <Modal title="Xác nhận hóa đơn" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <Modal title="Xác nhận hóa đơn" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} centered>
             <p>Bạn có chắc muốn xác nhận hóa đơn</p>
           </Modal>
           <Modal title="Xác nhận hủy hóa đơn" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>

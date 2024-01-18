@@ -32,13 +32,12 @@ public class JwtTokenProvider {
         return  claims.getSubject();
     }
     public boolean validToken(String token){
-
         try{
             Jwts.parser().setSigningKey(JWT_SECRET)
                     .parseClaimsJws(token);
             return true;
         }catch (Exception ex){
-            log.error("Lỗi!");
+        //    log.error("Lỗi!");
         }
         return false;
     }

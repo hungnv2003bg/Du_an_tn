@@ -3,12 +3,14 @@ package it.lab.dto;
 import it.lab.entity.HoaDon;
 import it.lab.entity.HoaDonChiTiet;
 import it.lab.entity.SanPhamChiTiet;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +24,10 @@ public class HoaDonChiTietDTO {
     private SanPhamChiTiet sanPhamChiTiet;
     private Integer soLuong;
     private Double donGia;
-    private LocalDate ngayTao;
-    private LocalDate ngayCapNhat;
-
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngayCapNhat;
+    private Integer soLuongLoi;
+    private Integer soLuongDoi;
     public static HoaDonChiTietDTO fromEntity(HoaDonChiTiet entity) {
         return new HoaDonChiTietDTO(
                 entity.getId(),
@@ -33,7 +36,9 @@ public class HoaDonChiTietDTO {
                 entity.getSoLuong(),
                 entity.getDonGia(),
                 entity.getNgayTao(),
-                entity.getNgayCapNhat()
+                entity.getNgayCapNhat(),
+                entity.getSoLuongLoi(),
+                entity.getSoLuongDoi()
         );
     }
 

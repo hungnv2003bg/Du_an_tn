@@ -15,15 +15,16 @@ import {
   notification,
 } from "antd";
 import "./style.css";
-import { Row, Table, Tag } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { Option } from "antd/es/mentions";
 import { useSanPhamStore } from "./useSanPhamStore";
 import { useForm } from "antd/es/form/Form";
-function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
-  const [form] = useForm();
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+function ModalThemSua({ type, thuocTinh, fetchData }) {
+  const [form] = useForm()
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (type, title, des, placement) => {
     if (type === "error") {
@@ -56,6 +57,7 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
     giaBan: 0,
     giaNhap: 0,
     soLuongTon: 0,
+    moTa: "",
   });
   const [fileList, setFileList] = useState([]);
   const [hinhAnh, setHinhAnh] = useState([]);
@@ -76,6 +78,12 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
     setSanPham({
       ...sanPham,
       giaNhap: e,
+    });
+  }
+  function handleSetMoTa(e) {
+    setSanPham({
+      ...sanPham,
+      moTa: e.target.value,
     });
   }
   function handleSetSoLuong(e) {
@@ -187,15 +195,6 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
       );
       return;
     }
-    if (sanPham.soLuongTon <= 0) {
-      openNotification(
-        "error",
-        "Hệ thống",
-        "Vui lòng nhập số lượng",
-        "bottomRight"
-      );
-      return;
-    }
     if (hinhAnh.length < 2) {
       openNotification(
         "error",
@@ -207,14 +206,13 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
     }
 
     setIsLoading(true);
-    var form1 = new FormData();
-    form1.append("file1", hinhAnh[0]);
-    form1.append("file2", hinhAnh[1]);
-    form1.append("data", JSON.stringify(sanPham));
-    const data = await useSanPhamStore.actions.themSanPham(form1);
+    var form2 = new FormData();
+    form2.append("file1", hinhAnh[0]);
+    form2.append("file2", hinhAnh[1]);
+    form2.append("data", JSON.stringify(sanPham));
+    const data = await useSanPhamStore.actions.themSanPham(form2);
     if (data.data.status == "THANHCONG") {
       form.resetFields();
-
       openNotification(
         "success",
         "Hệ thống",
@@ -246,19 +244,6 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
     setFileList([]);
     setIsModalOpen(false);
     setIsLoading(false);
-  }
-  async function handleSuaSanPham() {
-    if (sanPham.tenSanPham == "") {
-      return;
-    }
-    const data = await useSanPhamStore.actions.suaSanPhamu(sanPham);
-    openNotification("success", "Hệ thống", "Sửa thành công", "bottomRight");
-    setSanPham({
-      ...sanPham,
-      tenSanPham: "",
-    });
-    setData(data.data.data);
-    setIsModalOpen(false);
   }
   return (
     <>
@@ -295,6 +280,8 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
 
           <Form.Item label="Giá nhập">
             <InputNumber
+              formatter={(value) => ` ${value}đ`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
               style={{
                 width: "100%",
               }}
@@ -310,6 +297,8 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
           </Form.Item>
           <Form.Item label="Giá bán">
             <InputNumber
+              formatter={(value) => ` ${value}đ`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
               style={{
                 width: "100%",
               }}
@@ -392,31 +381,17 @@ function ModalThemSua({ type, thuocTinh, fetchData,setData }) {
                 : ""}
             </Select>
           </Form.Item>
-          <Form.Item label="Số lượng">
-            <InputNumber
-              style={{
-                width: "100%",
-              }}
-              value={sanPham.soLuong}
-              min={0}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              onChange={handleSetSoLuong}
-            />
-          </Form.Item>
           <Form.Item label="Thông tin chi tiết">
-            <TextArea rows={4} />
+            <Input.TextArea value={sanPham.moTa} onChange={handleSetMoTa} />
           </Form.Item>
+
           <Form.Item label="Upload">
             <Upload
               listType="picture-card"
               multiple
               customRequest={() => { }}
               {...props}
-              maxCount={4}
+              maxCount={2}
               fileList={fileList}
             >
               <div>

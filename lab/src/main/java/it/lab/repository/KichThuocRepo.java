@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface KichThuocRepo extends JpaRepository<KichThuoc, Long> {
+    public boolean existsByTenKichThuocEquals(String ten);
 }

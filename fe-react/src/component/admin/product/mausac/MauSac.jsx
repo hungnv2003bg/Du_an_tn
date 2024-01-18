@@ -13,6 +13,7 @@ import ModalCapNhat from "./ModalCapNhat";
 import ModalXoa from "./ModalXoa";
 import ModalView from "./ModalView";
 import { useForm } from "antd/es/form/Form";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
 function MauSac() {
   const [form] = useForm()
   const language = useSelector(selectLanguage);
@@ -166,6 +167,9 @@ function MauSac() {
       dataIndex: "ngayTao",
       key: "ngayTao",
       width: "15%",
+      render: (ngayTao) => (
+        <>{ngayTao ? fixNgayThang(ngayTao) : <Tag color="processing">Mới</Tag>}</>
+      ),
     },
     {
       title: "Ngày cập nhật",
@@ -173,7 +177,7 @@ function MauSac() {
       key: "ngayCapNhat",
       width: "15%",
       render: (ngayCapNhat) => (
-        <>{ngayCapNhat ? ngayCapNhat : <Tag color="processing">Mới</Tag>}</>
+        <>{ngayCapNhat ? fixNgayThang(ngayCapNhat) : <Tag color="processing">Mới</Tag>}</>
       ),
     },
     {
@@ -182,7 +186,7 @@ function MauSac() {
       key: "maChatLieu",
       align: "center",
       width: "15%",
-      render: (id) => (
+      render: (id, record) => (
         <div
           style={{
             display: "flex",
@@ -190,7 +194,7 @@ function MauSac() {
           }}
         >
           <ModalView id={id} />
-          <ModalCapNhat id={id} setData={setData} />
+          <ModalCapNhat data={record} setData={setData} />
           <ModalXoa id={id} setData={setData} />
         </div>
       ),
@@ -238,6 +242,10 @@ function MauSac() {
       return;
     }
     const data = await useNhomSanPhamStore.actions.themChatLieu(chatLieu);
+    if (!data.data) {
+      openNotification("error", "Hệ thống", "Đã tồn tại tên " + chatLieu.tenMau, "bottomRight");
+      return
+    }
     openNotification("success", "Hệ thống", "Thêm thành công", "bottomRight");
     setData(data.data.data);
     setChatLieu({
@@ -298,8 +306,8 @@ function MauSac() {
                   }}
                 >
                   <Form.Item
-                    label="Tên nhóm"
-                    name="Tên nhóm"
+                    label="Tên màu"
+                    name="Tên màu"
                     rules={[
                       {
                         required: true,

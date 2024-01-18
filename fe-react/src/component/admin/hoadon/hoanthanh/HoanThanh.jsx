@@ -1,22 +1,35 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./style.css";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Input, Menu, Modal, Row, Space, Table, notification } from "antd";
-import { PiMagnifyingGlassBold } from "react-icons/pi";
+import {
+  Button,
+  Input,
+  Menu,
+  Modal,
+  Row,
+  Space,
+  Table,
+  notification,
+} from "antd";
 import { selectLanguage } from "../../../../language/selectLanguage";
 import { fixMoney } from "../../../../extensions/fixMoney";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useHoaDonHuyStore } from "./useHoaDonHuyStore";
 import ChiTietHoaDon from "../chitiethoadon/ChiTietHoaDon";
+import { fixNgayThang } from "../../../../extensions/fixNgayThang";
+import YeuCauDoiTra from "../../doitra/YeuCauDoiTra";
+import HuyDoiTra from "../../doitra/HuyDoiTra";
+import sapXepTheoNgayTao from "../../../../extensions/sapXepNgayTao";
+import kiemTraNgayTrong30Ngay from "../../../../extensions/kiemTraNgayTao";
 
-function HoanThanh() {
+function HoanThanh({ type = 2 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    handleXacNhanHoaDon()
+    handleXacNhanHoaDon();
     setIsModalOpen(false);
   };
   const handleCancel = () => {
@@ -56,10 +69,6 @@ function HoanThanh() {
   const onSelectChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
   };
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -186,7 +195,7 @@ function HoanThanh() {
     {
       title: "Tên khách hàng",
       dataIndex: "tenKhachHang",
-      width: "20%",
+      width: "15%",
       ...getColumnSearchProps("tenKhachHang"),
     },
     {
@@ -197,16 +206,25 @@ function HoanThanh() {
     },
     {
       title: "Giá trị HĐ",
-      dataIndex: "giaTriHd",
+      dataIndex: "hoaDonChiTietList",
       width: "15%",
-      sorter: (a, b) => a.giaTriHd - b.giaTriHd,
-      render: (item) => <span>{fixMoney(item)}</span>,
+      render: (hoaDonChiTietList) => (
+        <span>
+          {fixMoney(
+            hoaDonChiTietList
+              ? hoaDonChiTietList.reduce((pre, cur) => {
+                  return pre + cur.soLuong * cur.donGia;
+                }, 0)
+              : 0
+          )}
+        </span>
+      ),
     },
     {
-      title: "Ngày tạo",
-      dataIndex: "ngayTao",
+      title: "Ngày thanh toán",
+      dataIndex: "ngayThanhToan",
       width: "20%",
-      sorter: (a, b) => a - b,
+      render: (item) => <span>{fixNgayThang(item)}</span>,
     },
     {
       title: "Trạng thái",
@@ -216,31 +234,105 @@ function HoanThanh() {
     {
       title: "Thao tác",
       dataIndex: "key",
-      width: "10%",
+      width: "15%",
       align: "center",
-      render: (id) => <ChiTietHoaDon hoaDonId={id} />,
+      render: (id) => (
+        <>
+          <ChiTietHoaDon hoaDonId={id} />
+          {type == 1 && (
+            <>
+              <YeuCauDoiTra hoaDonId={id} setData2={layDuLieu} />
+              <HuyDoiTra id={id} setData={layDuLieu} />
+            </>
+          )}
+        </>
+      ),
     },
   ];
-  const [data, setData] = useState([
-  ])
+  const columnsDoiTra = [
+    {
+      title: "Mã HĐ",
+      dataIndex: "maHoaDon",
+      width: "10%",
+      ...getColumnSearchProps("maHoaDon"),
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: "tenKhachHang",
+      width: "15%",
+      ...getColumnSearchProps("tenKhachHang"),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "soDienThoai",
+      width: "15%",
+      ...getColumnSearchProps("soDienThoai"),
+    },
+    {
+      title: "Giá trị HĐ",
+      dataIndex: "hoaDonChiTietList",
+      width: "15%",
+      render: (hoaDonChiTietList) => (
+        <span>
+          {fixMoney(
+            hoaDonChiTietList
+              ? hoaDonChiTietList.reduce((pre, cur) => {
+                  if (cur.trangThai === 2) {
+                    return pre + cur.soLuong * cur.donGia;
+                  } else {
+                    return pre;
+                  }
+                }, 0)
+              : 0
+          )}
+        </span>
+      ),
+    },
+    {
+      title: "Ngày thanh toán",
+      dataIndex: "ngayThanhToan",
+      width: "20%",
+      render: (item) => <span>{fixNgayThang(item)}</span>,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "trangThai",
+      width: "10%",
+    },
+    {
+      title: "Thao tác",
+      dataIndex: "key",
+      width: "15%",
+      align: "center",
+      render: (id) => (
+        <>
+          <ChiTietHoaDon hoaDonId={id} />
+          {type == 1 && (
+            <>
+              <YeuCauDoiTra hoaDonId={id} setData2={layDuLieu} />
+              <HuyDoiTra id={id} setData={layDuLieu} />
+            </>
+          )}
+        </>
+      ),
+    },
+  ];
+  const [data, setData] = useState([]);
   async function layDuLieu() {
     const ketQua = await useHoaDonHuyStore.actions.fetchHoaDonHuy();
-    setData(ketQua.data.data)
+    setData(ketQua.data.data);
   }
   useEffect(() => {
-    layDuLieu()
-  }, [])
+    layDuLieu();
+  }, []);
   async function handleXacNhanHoaDon() {
     if (selectedRowKeys.length == 0) {
-      openNotification(
-        "error",
-        "Hệ thống",
-        "Chưa chọn hóa đơn",
-        "bottomRight"
-      );
-      return
+      openNotification("error", "Hệ thống", "Chưa chọn hóa đơn", "bottomRight");
+      return;
     }
-    const ketQua = await useHoaDonHuyStore.actions.xacNhanHoaDon(selectedRowKeys)
+    const ketQua = await useHoaDonHuyStore.actions.xacNhanHoaDon(
+      selectedRowKeys
+    );
     if (ketQua.data.status == "THANHCONG") {
       for (var item of ketQua.data.data) {
         openNotification(
@@ -256,50 +348,51 @@ function HoanThanh() {
         "Xác nhận thành công",
         "bottomRight"
       );
-      layDuLieu()
+      layDuLieu();
     } else {
-      openNotification(
-        "error",
-        "Hệ thống",
-        "Lỗi",
-        "bottomRight"
-      );
+      openNotification("error", "Hệ thống", "Lỗi", "bottomRight");
     }
-    setSelectedRowKeys([])
+    setSelectedRowKeys([]);
   }
   function handleHuy() {
-    setSelectedRowKeys([])
+    setSelectedRowKeys([]);
   }
   return (
-    <>{contextHolder}
+    <>
+      {contextHolder}
       <div className="choxacnhan">
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={data}
-        />
+        {type != 1 ? (
+          <Table columns={columns} dataSource={sapXepTheoNgayTao(data)} />
+        ) : (
+          <Table
+            columns={columnsDoiTra}
+            dataSource={sapXepTheoNgayTao(
+              data.filter((item) => {
+                return kiemTraNgayTrong30Ngay(item.ngayThanhToan);
+              })
+            )}
+          />
+        )}
         <Row
           style={{
             display: "flex",
             justifyContent: "flex-end",
           }}
         >
-          {/* <Button type="primary" danger onClick={showModal2}>
-            Hủy
-          </Button> */}
-          {/* <Button
-            style={{
-              marginLeft: "12px",
-            }}
-            type="primary"
-            onClick={showModal}
+          <Modal
+            title="Xác nhận hóa đơn"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
           >
-            Xác nhận
-          </Button> */}
-          <Modal title="Xác nhận hóa đơn" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
             <p>Bạn có chắc muốn xác nhận hóa đơn</p>
           </Modal>
-          <Modal title="Xác nhận hủy hóa đơn" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
+          <Modal
+            title="Xác nhận hủy hóa đơn"
+            open={isModalOpen2}
+            onOk={handleOk2}
+            onCancel={handleCancel2}
+          >
             <p>Bạn có chắc muốn hủy hóa đơn</p>
           </Modal>
         </Row>

@@ -1,104 +1,105 @@
-import { useSelector } from "react-redux";
-import { selectLanguage } from "../../../../language/selectLanguage";
+import React, { useState, useEffect, useCallback } from 'react';
+import { DatePicker } from 'antd';
 import * as echarts from 'echarts';
+import moment from 'moment';
 
-import { useEffect, useRef } from "react";
-function ThongKeBar() {
-    const language = useSelector(selectLanguage);
-    const chartRef = useRef(null);
-    useEffect(() => {
-        const chart = echarts.init(chartRef.current);
+const { RangePicker } = DatePicker;
 
-        // Định nghĩa dữ liệu và tùy chọn biểu đồ
-        const option = {
-            title: {
-                text: 'Rainfall vs Evaporation',
-                subtext: 'Fake Data'
-            },
-            tooltip: {
-                trigger: 'axis'
-            },
-            legend: {
-                data: ['Rainfall', 'Evaporation']
-            },
-            toolbox: {
-                show: true,
-                feature: {
-                    dataView: { show: true, readOnly: false },
-                    magicType: { show: true, type: ['line', 'bar'] },
-                    restore: { show: true },
-                    saveAsImage: { show: true }
-                }
-            },
-            calculable: true,
-            xAxis: [
-                {
-                    type: 'category',
-                    // prettier-ignore
-                    data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                }
-            ],
-            yAxis: [
-                {
-                    type: 'value'
-                }
-            ],
-            series: [
-                {
-                    name: 'Rainfall',
-                    type: 'bar',
-                    data: [
-                        2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3
-                    ],
-                    markPoint: {
-                        data: [
-                            { type: 'max', name: 'Max' },
-                            { type: 'min', name: 'Min' }
-                        ]
-                    },
-                    markLine: {
-                        data: [{ type: 'average', name: 'Avg' }]
-                    }
-                },
-                {
-                    name: 'Evaporation',
-                    type: 'bar',
-                    data: [
-                        2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3
-                    ],
-                    markPoint: {
-                        data: [
-                            { name: 'Max', value: 182.2, xAxis: 7, yAxis: 183 },
-                            { name: 'Min', value: 2.3, xAxis: 11, yAxis: 3 }
-                        ]
-                    },
-                    markLine: {
-                        data: [{ type: 'average', name: 'Avg' }]
-                    }
-                }
-            ]
-        }
+const YourComponent = () => {
+  const [yearRange, setYearRange] = useState([moment().year() - 1, moment().year()]); // Default to the last two years
+  const [yearlyProfits, setYearlyProfits] = useState({});
+  const [chart, setChart] = useState(null);
 
-        chart.setOption(option);
+  const createChartOption = useCallback(() => {
+    if (!yearlyProfits || Object.keys(yearlyProfits).length === 0) {
+      return {}; // Return an empty object or handle the case when yearlyProfits is not yet available
+    }
 
-        // Đảm bảo rằng biểu đồ được tự động thay đổi kích thước khi cửa sổ trình duyệt thay đổi
-        window.addEventListener('resize', () => {
-            chart.resize();
-        });
+    const months = Object.keys(yearlyProfits[Object.keys(yearlyProfits)[0]]);
+    const sortedMonths = months.sort((a, b) => moment(a, 'MMMM').month() - moment(b, 'MMMM').month());
 
-        // Xóa sự kiện khi component unmounted
-        return () => {
-            chart.dispose();
-            window.removeEventListener('resize', () => {
-                chart.resize();
-            });
-        };
-    }, []);
-    return (
-        <>
-            <div ref={chartRef} style={{ width: '100%', height: '400px' }} />
-        </>
-    );
-}
+    const xAxisData = sortedMonths.slice(0, 12); // Display data for the first 12 months
+    const seriesData = Object.keys(yearlyProfits).flatMap((year) => [
+      {
+        name: year + ' - Tổng Doanh Thu',
+        type: 'line',
+        data: xAxisData.map((month) => yearlyProfits[year][month].tongDoanhThu),
+      },
+      {
+        name: year + ' - Chi Phí',
+        type: 'line',
+        data: xAxisData.map((month) => yearlyProfits[year][month].loiNhuanSauKhiTruChiPhi),
+      }
+    ]);
 
-export default ThongKeBar;
+    return {
+      title: {
+      },
+      tooltip: {
+        trigger: 'axis',
+      },
+      legend: {
+        data: Object.keys(yearlyProfits).flatMap((year) => [year + ' - Tổng Doanh Thu', year + ' - Chi Phí']),
+      },
+      xAxis: {
+        type: 'category',
+        nameLocation: 'middle',
+        data: xAxisData,
+      },
+      yAxis: {
+        name: 'Values',
+      },
+      series: seriesData,
+    };
+  }, [yearlyProfits]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8089/api/thong-ke/bieu-do-tong-hop?startYear=${yearRange[0]}&endYear=${yearRange[1]}`);
+        const data = await response.json();
+        setYearlyProfits(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [yearRange]);
+
+  useEffect(() => {
+    if (chart) {
+      chart.setOption(createChartOption());
+    }
+  }, [yearlyProfits, chart, createChartOption]);
+
+  useEffect(() => {
+    const chartDom = document.getElementById('chart');
+    const newChart = echarts.init(chartDom);
+    setChart(newChart);
+
+    // Set the canvas size
+    newChart.resize({
+      width: 1100,
+      height: 400,
+    });
+
+    return () => {
+      newChart.dispose();
+    };
+  }, []);
+
+  return (
+    <div>
+      <RangePicker
+        picker="year"
+        onChange={(dates, dateStrings) => setYearRange([parseInt(dateStrings[0], 10), parseInt(dateStrings[1], 10)])}
+      />
+      {/* <h5>Thống kê theo năm thanh-bar</h5> */}
+
+      <div id="chart" style={{ width: '90%', height: '400px'}} />
+    </div>
+  );
+};
+
+export default YourComponent;

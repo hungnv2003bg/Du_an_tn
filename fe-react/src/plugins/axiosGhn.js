@@ -36,8 +36,9 @@ ghn.interceptors.response.use(response => {
         // ℹ️ Logout user and redirect to login page
         // Remove "userData" from localStorage
     }
-    else {
-        return Promise.reject(error)
+    if (error.response.status === 400) {
+        console.log(123);
+        //  return Promise.reject(error)
     }
 })
 export default ghn

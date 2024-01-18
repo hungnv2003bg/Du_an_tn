@@ -11,8 +11,14 @@ import java.util.Optional;
 
 @Repository
 public interface NguoiDungRepo extends JpaRepository<NguoiDung, Long> {
-    @Query(value = "select * from nguoidung", nativeQuery = true)
-    public List<NguoiDungCustom> layDuLieu();
+    public boolean existsByEmailContains(String email);
+
+    public boolean existsByEmailEquals(String email);
 
     public Optional<NguoiDung> findNguoiDungByEmailEquals(String email);
+
+    @Query("SELECT a FROM NguoiDung a JOIN QuyenNguoiDung b ON b.nguoiDung.id = a.id WHERE b.quyen.id = 2 and  a.trangThai = 0")
+    List<NguoiDung> getAllTangVoucher();
+
+
 }

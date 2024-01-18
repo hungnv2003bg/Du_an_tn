@@ -2,6 +2,7 @@ package it.lab.iservice;
 
 import it.lab.common.Page;
 import it.lab.common.ResponObject;
+import it.lab.dto.DiaChiDTO;
 import it.lab.dto.HoaDonDTO;
 import it.lab.enums.APIStatus;
 import it.lab.enums.XacNhanHoaDonEnum;
@@ -20,6 +21,10 @@ public interface IHoaDonService {
 
     public Page<HoaDonHoanThanh> layHetHoaDonHoanThanh();
 
+    public Page<HoaDonDoiTra> layHetHoaDonDoiTra();
+
+    public Page<HoaDonTuChoiDoi> layHetHoaDonTuChoiHuy();
+
     public ResponObject<List<String>, XacNhanHoaDonEnum> xacNhanHoaDon(Long[] hoaDonId);
 
     public ResponObject<List<String>, XacNhanHoaDonEnum> chuyenSangDangGiao(Long[] hoaDonId);
@@ -37,4 +42,8 @@ public interface IHoaDonService {
     public Boolean themSPChoHoaDon(Long hoaDonId, Long spChiTietId, Integer soLuong);
 
     public Boolean thayDoiPhiVanChuyen(Long hoaDonId, Double phiVanChuyenMoi);
+
+    public void doiDiaChiHoaDon(Long hoaDonId, Long diaChiId);
+
+    public void taoDiaChi(DiaChiDTO diaChi);
 }
